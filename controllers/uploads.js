@@ -5,9 +5,10 @@ const {response} = require('express');
 const { v4: uuidv4 } = require('uuid');
 
 const {actualizarImagen} = require("./actualizar-imagen");
-const ArquetipoImg = require('../models/arquetipoImg');
 const { validyty } = require("../helpers/validity-ObjectID");
-const { patch } = require('../routes/uploads');
+
+const ArquetipoImg = require('../models/arquetipoImg');
+
 
 const fileUpload = async(req, res = response) => {
 
@@ -92,7 +93,6 @@ const fileUpload = async(req, res = response) => {
 
     } catch (error) {
         // TODO: guardar log
-        console.log(error);
         res.status(500).json({
             ok: false,
             msg: 'Error inesperado... Comuníquese con el administrador del sistema'
@@ -118,7 +118,6 @@ const retornarArchivo = (req, res = response) => {
 
     } catch (error) {
         // TODO: guardar log
-        console.log(error);
         res.status(500).json({
             ok: false,
             msg: 'Error inesperado... Comuníquese con el administrador del sistema'
@@ -126,6 +125,7 @@ const retornarArchivo = (req, res = response) => {
     }
 
 }
+
 module.exports = {
     fileUpload,
     retornarArchivo

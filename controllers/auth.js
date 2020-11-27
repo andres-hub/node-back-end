@@ -3,6 +3,8 @@ const bcryptjs = require('bcryptjs');
 
 const Usuario = require('../models/usuario');
 const { generarJWT } = require('../helpers/jwt');
+const { googleVerify } = require('../helpers/google-verify');
+const usuarios = require('./usuarios');
 
 const login = async(req, res = response)=>{
 
@@ -17,6 +19,14 @@ const login = async(req, res = response)=>{
             return res.status(400).json({
                 ok: false,
                 msg: 'Usuario o contraseña no valida' 
+            });
+        }
+
+        if(!usuarioDB.estado){
+            // TODO: guardar log
+            return res.status(400).json({
+                ok: false,
+                msg: 'Error: Usuario inactivo.'
             });
         }
 
@@ -47,6 +57,59 @@ const login = async(req, res = response)=>{
     }
 }
 
+const googleSingIn = async( req, res = response) => {
+
+    try {
+
+        const googleToken = req.body.token;
+        const {name, email, picture} = await googleVerify(googleToken);
+
+        const usuarioDB = await Usuario.findOne({email});
+        let usuario;
+
+        if(!usuarioDB){
+            usuario = new Usuario({
+                nombre: name,
+                email,
+                password: ':)',
+                img: picture,
+                google: true
+            });
+        }else{
+
+            if(!usuarioDB.estado){
+                // TODO: guardar log
+                return res.status(400).json({
+                    ok: false,
+                    msg: 'Error: Usuario inactivo.'
+                });
+            }
+
+            usuario = usuarioDB;
+            usuario.google = true;
+        }
+
+        await usuario.save();
+        
+        const token = await generarJWT(usuario.id);
+
+        // TODO: guardar log
+        res.json({
+            ok: true,
+            token
+        });
+        
+    } catch (error) {
+        // TODO: guardar log
+        res.status(401).json({
+            ok: false,
+            msg: 'El token no es correcto.'
+        });
+    }
+
+}
+
 module.exports = {
-    login
+    login,
+    googleSingIn
 }
