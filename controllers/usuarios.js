@@ -5,13 +5,35 @@ const Usuario = require('../models/usuario');
 
 const getUsuarios = async(req, res)=>{
 
-    const usuarios = await Usuario.find({}, 'nombre email role google');
+    try {
 
-    res.json({
-        ok: true,
-        usuarios
-    })
+        const desde = Number(req.query.desde) || 0;
+        const limite = Number(req.query.limite) || 5;
+        
+        const [usuarios, total] = await Promise.all([
 
+            Usuario
+                .find()
+                .skip(desde)
+                .limit(limite),
+            
+            Usuario.countDocuments()
+
+        ]);
+
+        res.json({
+            ok: true,
+            usuarios,
+            total
+        });    
+
+    } catch (error) {
+        // TODO: guardar log
+        res.status(500).json({
+            ok: false,
+            msg: 'Error inesperado... Comuníquese con el administrador del sistema'
+        });
+    }
 }
 
 const crearUsuario = async(req, res = response)=>{
@@ -53,8 +75,7 @@ const crearUsuario = async(req, res = response)=>{
     
 }
 
-const actualizarUsuario = async(req, res = response)=>{
-    // TODO: Validar token
+const actualizarUsuario = async(req, res = response)=>{    
 
     const uid = req.params.id;
     

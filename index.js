@@ -14,6 +14,9 @@ app.use(express.json());
 dbConnection();
 
 app.use('/api/usuarios', require('./routes/usuarios'));
+app.use('/api/modulos', require('./routes/modulos'));
+app.use('/api/entidades', require('./routes/entidades'));
+app.use('/api/upload', require('./routes/uploads'));
 app.use('/api/login', require('./routes/auth'));
 
 app.listen(process.env.PORT, ()=>{
