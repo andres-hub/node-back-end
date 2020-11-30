@@ -33,10 +33,12 @@ router.post('/',
 
 router.put('/:id',
     [
-        // validarJWT,
-        // check('nombre', 'El nombre es obligatorio').not().isEmpty(),
-        // check('email', 'El emial es obligatorio').isEmail(),
-        // validarCampos
+        validarJWT,
+        check('nombre', 'El nombre es obligatorio').not().isEmpty(),
+        check('moduloId', 'El modulo no es valido').isMongoId(),
+        check('url', 'La url es obligatorio').not().isEmpty(),
+        check('acciones', 'Las acciones son obligatorias').not().isEmpty(),
+        validarCampos
     ]    
     , actualizarEntidad
 );

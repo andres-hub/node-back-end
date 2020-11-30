@@ -31,10 +31,10 @@ router.post('/',
 
 router.put('/:id',
     [
-        // validarJWT,
-        // check('nombre', 'El nombre es obligatorio').not().isEmpty(),
-        // check('email', 'El emial es obligatorio').isEmail(),
-        // validarCampos
+        validarJWT,
+        check('nombre', 'El nombre es obligatorio').not().isEmpty(),
+        check('icono', 'El icono es obligatorio').not().isEmpty(),
+        validarCampos
     ]    
     , actualizarModulo
 );

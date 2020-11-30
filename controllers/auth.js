@@ -109,7 +109,32 @@ const googleSingIn = async( req, res = response) => {
 
 }
 
+const renewToken = async(req, res = response)=>{
+
+    try {
+
+        const uid = req.uid;
+
+        const token = await generarJWT(uid)
+    
+        res.json({
+            ok: true,
+            token
+        });
+        
+    } catch (error) {
+        // TODO: guardar log
+        res.status(500).json({
+            ok: false,
+            msg: 'Error inesperado... Comuníquese con el administrador del sistema'
+        });
+    }
+
+
+}
+
 module.exports = {
     login,
-    googleSingIn
+    googleSingIn,
+    renewToken
 }

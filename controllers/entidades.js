@@ -17,7 +17,7 @@ const getEntidades = async(req, res = response) =>{
                 .skip(desde)
                 .limit(limite),
             
-            Entidad.count()
+            Entidad.countDocuments()
 
         ]);
         
@@ -71,12 +71,42 @@ const crearEntidad = async(req, res = response) =>{
 
 };
 
-const actualizarEntidad = (req, res = response) =>{
+const actualizarEntidad = async(req, res = response) =>{
 
-    res.json({
-        ok: true,
-        msg: "actualizarEntidad"
-    });
+    try {
+
+        const id = req.params.id;
+
+        const entidadDB = await Entidad.findById(id);
+        
+        if(!entidadDB){
+            return res.status(404).json({
+                ok:false,
+                msg: 'La entidad no existe'
+            });
+        }
+
+        const cambios = {...req.body}
+
+        const entidad = await Entidad.findByIdAndUpdate(id,cambios, {new:true});
+
+        res.json({
+            ok: true,
+            entidad
+        });
+
+        res.json({
+            ok: true,
+            entidad
+        });
+
+    } catch (error) {
+        // TODO: guardar log
+        res.status(500).json({
+            ok: false,
+            msg: 'Error inesperado... Comuníquese con el administrador del sistema'
+        });
+    }
 
 };
 

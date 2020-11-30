@@ -17,7 +17,7 @@ const getModulos = async(req, res = response) =>{
                 .skip(desde)
                 .limit(limite),
             
-            Modulo.count()
+            Modulo.countDocuments()
 
         ]);
         
@@ -61,12 +61,38 @@ const crearModulo = async(req, res = response) =>{
 
 };
 
-const actualizarModulo = (req, res = response) =>{
+const actualizarModulo = async(req, res = response) =>{
 
-    res.json({
-        ok: true,
-        msg: "actualizarModulo"
-    });
+    try {
+
+        const id = req.params.id;
+
+        const moduloDB = await Modulo.findById(id);
+
+        if(!moduloDB){
+            return res.status(404).json({
+                ok:false,
+                msg: 'El modulo no existe'
+            });
+        }
+
+        const cambios = {...req.body}
+
+        const modulo = await Modulo.findByIdAndUpdate(id,cambios, {new:true});
+
+        res.json({
+            ok: true,
+            modulo
+        });
+    
+        
+    } catch (error) {
+        // TODO: guardar log
+        res.status(500).json({
+            ok: false,
+            msg: 'Error inesperado... Comuníquese con el administrador del sistema'
+        });
+    }
 
 };
 
