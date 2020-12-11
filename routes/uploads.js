@@ -20,10 +20,7 @@ router.put('/:arquetipo',
 );
 
 router.get('/:arquetipo/:file',
-    [
-        validarJWT
-    ]    
-    , retornarArchivo
+    retornarArchivo
 );
 
 module.exports = router;

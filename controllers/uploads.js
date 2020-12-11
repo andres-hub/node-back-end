@@ -41,7 +41,7 @@ const fileUpload = async(req, res = response) => {
             // TODO: guardar log
             return res.status(400).json({
                 ok: false,
-                msg: 'Archivo guardado con éxito'
+                msg: 'Archivo guardado con éxito',
             });
         }
 
@@ -86,6 +86,7 @@ const fileUpload = async(req, res = response) => {
             res.json({
                 ok: true,
                 msg: "Archivo guardado con éxito",
+                nombreArchivo
 
             });
         });
@@ -109,9 +110,8 @@ const retornarArchivo = (req, res = response) => {
         const file = req.params.file;
     
         let pathArchivo = path.join(__dirname, `../uploads/${arquetipo}/${file}`);
-
         if(!fs.existsSync(pathArchivo)){
-            pathArchivo = path.join(__dirname,`../uploads/no_imagen.png`);
+            pathArchivo = path.join(__dirname,`../uploads/no_imagen.jpg`);
            res.sendFile(pathArchivo);  
         }else
             res.sendFile(pathArchivo);
