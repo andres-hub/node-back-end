@@ -8,7 +8,7 @@ const {validarCampos} = require('../middlewares/validar-campos');
 
 const {validarJWT} = require('../middlewares/validar-jwt');
 
-const {getModulos, crearModulo, actualizarModulo} = require('../controllers/modulos');
+const {getModulos, crearModulo, actualizarModulo, buscarModulo, getId} = require('../controllers/modulos');
 
 const router = Router();
 
@@ -18,6 +18,20 @@ router.get('/',
     ],
     getModulos
 );
+
+router.get('/buscar/:termino',
+    [
+        validarJWT
+    ],
+    buscarModulo
+);
+
+router.get('/:id',
+    [
+        validarJWT
+    ],
+    getId
+)
 
 router.post('/',
     [
@@ -38,5 +52,7 @@ router.put('/:id',
     ]    
     , actualizarModulo
 );
+
+
 
 module.exports = router;
