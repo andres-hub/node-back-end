@@ -1,5 +1,5 @@
 /*
-    Ruta: /api/modulos
+    Ruta: /api/parametros
 */
 
 const {Router} = require('express');
@@ -8,58 +8,50 @@ const {validarCampos} = require('../middlewares/validar-campos');
 
 const {validarJWT} = require('../middlewares/validar-jwt');
 
-const { getAllModulos, getModulos,  buscarModulo, getModuloId, crearModulo, actualizarModulo} = require('../controllers/modulos');
+const { getParametros, crearParametro, getParametroId, actualizarParametro, buscarParametro } = require('../controllers/parametros');
 
 const router = Router();
-
-router.get('/all',
-    [
-        validarJWT
-    ],
-    getAllModulos
-);
 
 router.get('/',
     [
         validarJWT
     ],
-    getModulos
+    getParametros
 );
 
 router.get('/buscar/:termino',
     [
         validarJWT
     ],
-    buscarModulo
-);
+    buscarParametro
+)
 
 router.get('/:id',
     [
         validarJWT
     ],
-    getModuloId
+    getParametroId
 )
-
-router.post('/',
-    [
-        validarJWT,
-        check('nombre', 'El nombre es obligatorio').not().isEmpty(),
-        check('icono', 'El icono es obligatorio').not().isEmpty(),
-        validarCampos
-    ]
-    , crearModulo
-);
 
 router.put('/:id',
     [
         validarJWT,
         check('nombre', 'El nombre es obligatorio').not().isEmpty(),
-        check('icono', 'El icono es obligatorio').not().isEmpty(),
+        check('valor', 'El valor es obligatorio').not().isEmpty(),
+        check('estado', 'El valor es obligatorio').not().isEmpty(),
         validarCampos
-    ]    
-    , actualizarModulo
-);
+    ],
+    actualizarParametro
+)
 
-
+router.post('/',
+    [    
+        validarJWT,
+        check('nombre', 'El nombre es obligatorio').not().isEmpty(),
+        check('valor', 'El valor es obligatorio').not().isEmpty(),
+        validarCampos
+    ],
+    crearParametro
+)
 
 module.exports = router;

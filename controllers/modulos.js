@@ -5,12 +5,33 @@ const Modulo = require('../models/modulo');
 
 const { validyty } = require("../helpers/validity-ObjectID");
 
+const getAllModulos = async(req, res = response) =>{
+    try {
+
+        const modulos = await Modulo.find();
+
+        // TODO: guardar log
+        res.json({
+            ok: true,
+            modulos
+        });
+
+    } catch (error) {
+        // TODO: guardar log
+        res.status(500).json({
+            ok: false,
+            msg: 'Error inesperado... Comuníquese con el administrador del sistema'
+        });
+    }
+
+};
+
 const getModulos = async(req, res = response) =>{
 
     try {
 
         const desde = Number(req.query.desde) || 0;
-        const limite = Number(req.query.limite) || 5;
+        const limite = Number(req.query.limite) || 10;
 
         const [modulos, total] = await Promise.all([
 
@@ -63,7 +84,7 @@ const buscarModulo = async(req, res = response) =>{
     }
 }
 
-const getId = async(req, res = response)=>{
+const getModuloId = async(req, res = response)=>{
     try {
         
         const id = req.params.id;
@@ -154,9 +175,10 @@ const actualizarModulo = async(req, res = response) =>{
 };
 
 module.exports = {
+    getAllModulos,
     getModulos,
-    crearModulo,
-    actualizarModulo,
     buscarModulo,
-    getId
+    getModuloId,
+    crearModulo,
+    actualizarModulo
 }

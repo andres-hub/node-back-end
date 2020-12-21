@@ -8,16 +8,30 @@ const {validarCampos} = require('../middlewares/validar-campos');
 
 const {validarJWT} = require('../middlewares/validar-jwt');
 
-const {getEntidades, crearEntidad, actualizarEntidad} = require('../controllers/entidades');
+const {getEntidades, crearEntidad, actualizarEntidad, getBuscar, getEntidadId} = require('../controllers/entidades');
 
 const router = Router();
 
-router.get('/',
+router.get('/:id',
     [
-        // validarJWT
+        validarJWT
     ],
     getEntidades
 );
+
+router.get('/:id/buscar/:termino',
+    [
+        validarJWT
+    ],
+    getBuscar
+);
+
+router.get('/buscarId/:id',
+    [
+        validarJWT
+    ],
+    getEntidadId
+)
 
 router.post('/',
     [
