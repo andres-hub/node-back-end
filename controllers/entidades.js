@@ -101,6 +101,16 @@ const getEntidadId = async(req, res = response) =>{
 
         const entidad = await Entidad.findById(id);
 
+        if(!entidad){
+        
+            // TODO: guardar log
+            return res.status(400).json({
+                ok: false,
+                msg: 'Error id no valido'
+            });
+        
+        }
+
         // TODO: guardar log
         res.json({
             ok: true,
@@ -118,10 +128,10 @@ const getEntidadId = async(req, res = response) =>{
 };
 
 const crearEntidad = async(req, res = response) =>{
-
-    const entidad = new Entidad(req.body);
-
+    
     try {
+
+        const entidad = new Entidad(req.body);
         
         const modulo = await Modulo.findById(entidad.moduloId);
 
@@ -133,6 +143,8 @@ const crearEntidad = async(req, res = response) =>{
             });
         }
 
+
+
         await entidad.save();
         
         // TODO: guardar log
@@ -142,6 +154,7 @@ const crearEntidad = async(req, res = response) =>{
         });
 
     } catch (error) {
+        console.log(error);
         // TODO: guardar log
         res.status(500).json({
             ok: false,

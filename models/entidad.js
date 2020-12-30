@@ -16,8 +16,15 @@ const EntidadSchema = Schema({
         required: true
     },
     acciones:[{
-        type: String,
-        required: true
+        accion:{
+            type: String,
+            required: true
+        },
+        alias:{
+            type: String,
+            required: true
+        }
+
     }],
 }, {collection: 'entidades'});
 

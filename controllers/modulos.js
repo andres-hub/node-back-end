@@ -91,20 +91,28 @@ const getModuloId = async(req, res = response)=>{
         const validarId = await validyty(id);
         if(!validarId){
             // TODO: guardar log
-            res.status(400).json({
+            return res.status(400).json({
                 ok: false,
                 msg: 'Error id no valido'
             });
-        }else{
-
-            const modulo = await Modulo.findById(id);
-
-            res.json({
-                ok: true,
-                modulo
-            });
-
         }
+        
+        const modulo = await Modulo.findById(id);
+
+        if(!modulo){
+        
+            // TODO: guardar log
+            return res.status(400).json({
+                ok: false,
+                msg: 'Error id no valido'
+            });
+        
+        }
+
+        res.json({
+            ok: true,
+            modulo
+        });
         
     } catch (error) {
         // TODO: guardar log
