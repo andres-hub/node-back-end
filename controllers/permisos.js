@@ -9,15 +9,77 @@ const Permiso = require('../models/permiso')
 const getPermisos = async(req, res = response) =>{
     try {
 
+        const id = req.params.id;
+        
+        const validarId = await validyty(id);
+        if(!validarId){
+        
+            // TODO: guardar log
+            return res.status(400).json({
+                ok: false,
+                msg: 'Error id no valido'
+            });
+        
+        }
+
+        const permisos = await Permiso.find({'asignado': id});
+
+        // TODO: guardar log
+        res.json({
+            ok: true,
+            permisos
+        });
+
+    } catch (error) {
+        // TODO: guardar log
+        res.status(500).json({
+            ok: false,
+            msg: 'Error inesperado... Comuníquese con el administrador del sistema'
+        });
+    }
+
+};
+
+const getAcciones = async(req, res = response) =>{
+    try {
+
         const modulos = await Modulo.find();
+
+        const id = req.params.id;
+        
+        const validarId = await validyty(id);
+        if(!validarId){
+        
+            // TODO: guardar log
+            return res.status(400).json({
+                ok: false,
+                msg: 'Error id no valido'
+            });
+        
+        }
 
         let menu = [];        
 
         await Promise.all(modulos.map(async (modulo)=>{
 
-            const permisos = await Entidad.find({'moduloId': modulo._id});
+            const entidades = await Entidad.find({'moduloId': modulo._id});
 
-            menu.push({ modulo, entidades: permisos});
+            await Promise.all(entidades.map(async (entidad)=>{
+                
+                await Promise.all(entidad.acciones.map(async (accion)=>{
+
+                    const permiso = await Permiso.find({'accion': accion._id, 'asignado': id});
+                    
+                    if(permiso != null && permiso.length > 0 ){                        
+                        accion.check = true;
+                    }
+
+                }))
+            }))
+            
+            menu.push({ modulo, entidades: entidades});
+
+
 
         }));
 
@@ -28,6 +90,7 @@ const getPermisos = async(req, res = response) =>{
         });
 
     } catch (error) {
+        console.log(error);
         // TODO: guardar log
         res.status(500).json({
             ok: false,
@@ -85,5 +148,6 @@ const postPermisos = async(req, res = response) =>{
 
 module.exports = {
     getPermisos,
+    getAcciones,
     postPermisos
 }

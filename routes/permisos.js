@@ -6,15 +6,22 @@ const {Router} = require('express');
 
 const {validarJWT} = require('../middlewares/validar-jwt');
 
-const { getPermisos, postPermisos } = require('../controllers/permisos');
+const { getPermisos, getAcciones, postPermisos } = require('../controllers/permisos');
 
 const router = Router();
 
-router.get('/',
+router.get('/:id',
     [
         validarJWT
     ],
     getPermisos
+)
+
+router.get('/acciones/:id',
+    [
+        validarJWT
+    ],
+    getAcciones
 );
 
 router.post('/:id',

@@ -23,6 +23,10 @@ const EntidadSchema = Schema({
         alias:{
             type: String,
             required: true
+        },
+        check:{
+            type:Boolean,
+            default: false
         }
 
     }],
