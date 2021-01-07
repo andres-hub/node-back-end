@@ -4,7 +4,7 @@ const bcryptjs = require('bcryptjs');
 const Usuario = require('../models/usuario');
 const { generarJWT } = require('../helpers/jwt');
 const { googleVerify } = require('../helpers/google-verify');
-const usuarios = require('./usuarios');
+const { getMenuFrontEnd } = require('../helpers/menu-frontend');
 
 const login = async(req, res = response)=>{
     
@@ -13,7 +13,7 @@ const login = async(req, res = response)=>{
     try {
 
         const usuarioDB = await Usuario.findOne({email});
-
+        
         if(!usuarioDB){
             // TODO: guardar log
             return res.status(400).json({
@@ -41,11 +41,13 @@ const login = async(req, res = response)=>{
         }
 
         const token = await generarJWT(usuarioDB.id);
+        const menu = await getMenuFrontEnd(usuarioDB.id);
 
         // TODO: guardar log
         res.json({
             ok: true,
-            token
+            token,
+            menu
         });
         
     } catch (error) {
@@ -93,10 +95,13 @@ const googleSingIn = async( req, res = response) => {
         
         const token = await generarJWT(usuario.id);
 
+        const menu = await getMenuFrontEnd(usuario.id);
+
         // TODO: guardar log
         res.json({
             ok: true,
-            token
+            token,
+            menu
         });
         
     } catch (error) {
@@ -118,11 +123,14 @@ const renewToken = async(req, res = response)=>{
         const token = await generarJWT(uid)
 
         const usuario = await Usuario.findById(uid);
-    
+
+        const menu = await getMenuFrontEnd(usuario.id);
+        
         res.json({
             ok: true,
             token,
-            usuario
+            usuario,
+            menu
         });
         
     } catch (error) {

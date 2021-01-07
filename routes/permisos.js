@@ -3,10 +3,13 @@
 */
 
 const {Router} = require('express');
+const {check} = require('express-validator');
+
+const {validarCampos} = require('../middlewares/validar-campos');
 
 const {validarJWT} = require('../middlewares/validar-jwt');
 
-const { getPermisos, getAcciones, postPermisos } = require('../controllers/permisos');
+const { getPermisos, getAcciones, postPermisos, getVerificarRuta } = require('../controllers/permisos');
 
 const router = Router();
 
@@ -23,6 +26,15 @@ router.get('/acciones/:id',
     ],
     getAcciones
 );
+
+router.put('/ruta',
+    [
+        check('ruta', 'La ruta es obligatoria').not().isEmpty(),
+        validarCampos,
+        validarJWT
+    ],
+    getVerificarRuta
+)
 
 router.post('/:id',
     [

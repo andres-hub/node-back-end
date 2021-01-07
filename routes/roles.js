@@ -8,10 +8,17 @@ const {validarCampos} = require('../middlewares/validar-campos');
 
 const {validarJWT} = require('../middlewares/validar-jwt');
 
-const {getRoles, crearRol, getRolId, actualizarRol} = require('../controllers/roles');
+const {getRoles, crearRol, getRolId, actualizarRol, getRolesAll} = require('../controllers/roles');
 const validarJwt = require('../middlewares/validar-jwt');
 
 const router = Router();
+
+router.get('/all',
+    [
+        validarJWT
+    ],
+    getRolesAll
+)
 
 router.get('/',
     [

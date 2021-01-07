@@ -39,6 +39,27 @@ const getRoles = async(req, res = response) =>{
 
 };
 
+const getRolesAll = async(req, res = response) =>{
+    try {
+
+        const roles = await Rol.find();
+
+        // TODO: guardar log
+        res.json({
+            ok: true,
+            roles
+        });
+
+    } catch (error) {
+        // TODO: guardar log
+        res.status(500).json({
+            ok: false,
+            msg: 'Error inesperado... Comuníquese con el administrador del sistema'
+        });
+    }
+
+};
+
 const getRolId = async(req, res = response) =>{
     try {
 
@@ -156,6 +177,7 @@ const crearRol = async(req, res = response) =>{
 
 
 module.exports = {
+    getRolesAll,
     getRoles,
     getRolId,
     actualizarRol,

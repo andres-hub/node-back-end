@@ -2,13 +2,15 @@ const {response} = require('express');
 const { set } = require('mongoose');
 
 const {validyty} = require('../helpers/validity-objectid');
+
 const Entidad = require('../models/entidad');
 const Modulo = require('../models/modulo');
-const Permiso = require('../models/permiso')
+const Permiso = require('../models/permiso');
+const Parametro = require('../models/parametro');
 
 const getPermisos = async(req, res = response) =>{
     try {
-
+       
         const id = req.params.id;
         
         const validarId = await validyty(id);
@@ -146,8 +148,59 @@ const postPermisos = async(req, res = response) =>{
 
 };
 
+const getVerificarRuta = async(req, res = response) =>{
+    try {
+        
+        const superUser = await Parametro.findOne({ 'nombre' :'SUPE_USUARIO', 'valor': req.uid});
+        
+        if(superUser){
+
+            return res.json({
+                ok: true           
+            });
+        }
+
+        const ruta = req.body.ruta;
+
+        const entidad = await Entidad.findOne({'url': ruta});
+
+        if(!entidad){
+            // TODO: guardar log
+            return res.status(404).json({
+                ok: false,
+                msg: 'Ruta no valida' 
+            });
+        }
+
+        const permiso = await Permiso.findOne({'asignado': req.uid, 'entidad': entidad._id});
+
+        if(!permiso){
+            // TODO: guardar log
+            return res.status(400).json({
+                ok: false,
+                msg: 'Acceso denegado' 
+            });
+        }
+
+        // TODO: guardar log
+        res.json({
+            ok: true           
+        });
+
+    } catch (error) {
+        console.log(error);
+        // TODO: guardar log
+        res.status(500).json({
+            ok: false,
+            msg: 'Error inesperado... Comuníquese con el administrador del sistema'
+        });
+    }
+
+};
+
 module.exports = {
     getPermisos,
     getAcciones,
+    getVerificarRuta,
     postPermisos
 }

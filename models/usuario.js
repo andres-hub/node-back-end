@@ -19,9 +19,9 @@ const UsuarioSchema = Schema({
         type: String,
     },
     role:{
-        type: String,
-        required: true,
-        default: 'USER_ROLE'
+        type: Schema.Types.ObjectId,
+        ref: 'Rol',
+        default: '5fe247a381d3002e1002df33'   
     },
     google:{
         type: Boolean,

@@ -3,7 +3,9 @@ const bcryptjs = require('bcryptjs');
 
 
 const { generarJWT } = require('../helpers/jwt');
+const { getMenuFrontEnd } = require('../helpers/menu-frontend');
 const Usuario = require('../models/usuario');
+const Permiso = require('../models/permiso');
 
 const getUsuarios = async(req, res)=>{
 
@@ -22,7 +24,7 @@ const getUsuarios = async(req, res)=>{
             Usuario.countDocuments()
 
         ]);
-
+        
         res.json({
             ok: true,
             usuarios,
@@ -58,18 +60,22 @@ const crearUsuario = async(req, res = response)=>{
 
         const salt = bcryptjs.genSaltSync();
         usuario.password = bcryptjs.hashSync(password, salt);
-
+        
         await usuario.save();
 
         const token = await generarJWT(usuario.id);
+        
+        const menu = await getMenuFrontEnd(usuario.id);
 
         // TODO: guardar log
         res.json({
             ok: true,
-            token
+            token,
+            menu
         });
         
     } catch (error) {
+        console.log(error);
         // TODO: guardar log
         res.status(500).json({
             ok: false,
@@ -198,7 +204,7 @@ const actualizarRol = async(req, res = response)=>{
     try {
 
         const uid = req.params.id;
-        const {password, google, nombre, estado, email, ...campos} = req.body;
+        const {role, ...campos} = req.body;
         const usuarioDB = await Usuario.findById(uid);
         
         if(!usuarioDB){
@@ -208,16 +214,31 @@ const actualizarRol = async(req, res = response)=>{
                 msg: 'El usuario no existe' 
             });
         }
+        
+        const usuarioActualizado = await Usuario.findByIdAndUpdate(uid, {role}, {new: true});
 
-        const usuarioActualizado = await Usuario.findByIdAndUpdate(uid, campos, {new: true});
+        usuarioActualizado.password = ':)';
 
-        // TODO: guardar log
+        const permisos = await Permiso.find({'asignado': usuarioActualizado.role});
+        
+        // await Permiso.deleteMany({'asignado': uid });
+
+        // await Promise.all(permisos.map( async (permiso)=>{    
+            
+        //     const {modulo, entidad, accion} = permiso;
+
+        //     const _permiso = new Permiso({modulo,entidad, accion, asignado: uid});
+        //     await _permiso.save(); 
+
+        // }));
+
         res.json({
             ok: true,
             usuario: usuarioActualizado
         });
         
     } catch (error) {
+        console.log(error);
         // TODO: guardar log
         res.status(500).json({
             ok: false,
