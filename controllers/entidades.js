@@ -1,8 +1,9 @@
-const {response} = require('express');
+const {response, urlencoded} = require('express');
 const { validyty } = require('../helpers/validity-ObjectID');
 
-const Entidad = require('../models/entidad');
 const Modulo = require('../models/modulo');
+const Entidad = require('../models/entidad');
+const Accion = require('../models/accion');
 
 const getEntidades = async(req, res = response) =>{
 
@@ -16,22 +17,40 @@ const getEntidades = async(req, res = response) =>{
         const validarId = await validyty(id);
         if(!validarId){
             // TODO: guardar log
-            res.status(400).json({
+            return res.status(400).json({
                 ok: false,
                 msg: 'Error id no valido'
             });
-        }else{
-            
-            const entidades = await Entidad.find({moduloId: id}).skip(desde).limit(limite);
-            
-            res.json({
-                ok: true,
-                entidades,
-                total: entidades.length
-            });
         }
+            
+        const entidadesDB = await Entidad.find({modulo: id}).skip(desde).limit(limite);
+
+        let entidades = [];
+
+        await Promise.all(entidadesDB.map(async (entidad)=>{
+
+            const {_id,nombre, url,modulo} = entidad;
+
+            const acciones = await Accion.find({'entidad': _id});
+            entidades.push({
+                _id,
+                nombre,
+                url,
+                modulo,
+                acciones
+            });
+
+        }));
+
+        res.json({
+            ok: true,
+            entidades,
+            total: entidadesDB.length
+        });
+        
         
     } catch (error) {
+        console.log(error);
         // TODO: guardar log
         res.status(500).json({
             ok: false,
@@ -99,9 +118,10 @@ const getEntidadId = async(req, res = response) =>{
         
         }
 
-        const entidad = await Entidad.findById(id);
+        const entidadDB = await Entidad.findById(id);
+        
 
-        if(!entidad){
+        if(!entidadDB){
         
             // TODO: guardar log
             return res.status(400).json({
@@ -111,13 +131,24 @@ const getEntidadId = async(req, res = response) =>{
         
         }
 
+        const {_id,nombre, url,modulo} = entidadDB;
+
+        const acciones = await Accion.find({'entidad': _id});
+
         // TODO: guardar log
         res.json({
             ok: true,
-            entidad
+            entidad:{
+                _id,
+                nombre,
+                url,
+                modulo,
+                acciones
+            }
         });
 
     } catch (error) {
+        console.log(error);
         // TODO: guardar log
         res.status(500).json({
             ok: false,
@@ -131,10 +162,32 @@ const crearEntidad = async(req, res = response) =>{
     
     try {
 
-        const entidad = new Entidad(req.body);
-        
-        const modulo = await Modulo.findById(entidad.moduloId);
+        const body = req.body;
+        const acciones = body.acciones;        
 
+        let validarCampos = true;
+        
+        await Promise.all(acciones.map( x =>{
+        
+            if (!x.accion || !x.alias || !x.url){
+                validarCampos = false;
+                return;
+            }
+        
+        }));
+        
+        if(!validarCampos){
+            // TODO: guardar log
+            return res.status(404).json({
+                ok: false,
+                msg: 'Datos incompletos'
+            });
+        }
+
+        const entidad = new Entidad(body);        
+        
+        const modulo = await Modulo.findById(body.modulo);
+        
         if(!modulo){
             // TODO: guardar log
             return res.status(404).json({
@@ -143,14 +196,20 @@ const crearEntidad = async(req, res = response) =>{
             });
         }
 
-
-
         await entidad.save();
+
+        Promise.all(acciones.map(async x =>{
+        
+            const accion = new Accion(x);
+            accion.entidad = entidad._id;
+            await  accion.save(); 
+        
+        }));
         
         // TODO: guardar log
         res.json({
             ok: true,
-            entidad
+            entidad: body
         });
 
     } catch (error) {
@@ -166,9 +225,20 @@ const crearEntidad = async(req, res = response) =>{
 
 const actualizarEntidad = async(req, res = response) =>{
 
-    try {
+    try {    
 
         const id = req.params.id;
+        
+        const validarId = await validyty(id);
+        if(!validarId){
+        
+            // TODO: guardar log
+            return res.status(400).json({
+                ok: false,
+                msg: 'Error id no valido'
+            });
+        
+        }
 
         const entidadDB = await Entidad.findById(id);
         
@@ -181,19 +251,48 @@ const actualizarEntidad = async(req, res = response) =>{
 
         const cambios = {...req.body}
 
+        let validarCampos = true;
+        
+        
+        await Promise.all(cambios.acciones.map( x =>{
+            
+            if (!x.accion || !x.alias || !x.url){
+                validarCampos = false;
+                return;
+            }
+        
+        }));
+        
+        if(!validarCampos){
+            // TODO: guardar log
+            return res.status(404).json({
+                ok: false,
+                msg: 'Datos incompletos'
+            });
+        }
+
         const entidad = await Entidad.findByIdAndUpdate(id,cambios, {new:true});
 
-        res.json({
-            ok: true,
-            entidad
-        });
+        Promise.all(cambios.acciones.map(async x =>{
+            
+            if(x._id){
+                const accion = await Accion.findByIdAndUpdate(x._id, x);
+            }else{
+                const accion = new Accion(x);
+                accion.entidad = entidad._id;
+                await  accion.save(); 
+            }
+
+        }));        
 
         res.json({
             ok: true,
             entidad
         });
+        
 
     } catch (error) {
+        console.log(error);
         // TODO: guardar log
         res.status(500).json({
             ok: false,

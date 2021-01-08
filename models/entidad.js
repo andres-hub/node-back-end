@@ -6,7 +6,7 @@ const EntidadSchema = Schema({
         type: String,
         required: true
     },
-    moduloId: {
+    modulo: {
         type: Schema.Types.ObjectId,
         ref: 'Modulo',
         required: true
@@ -15,21 +15,8 @@ const EntidadSchema = Schema({
         type: String,
         required: true
     },
-    acciones:[{
-        accion:{
-            type: String,
-            required: true
-        },
-        alias:{
-            type: String,
-            required: true
-        },
-        check:{
-            type:Boolean,
-            default: false
-        }
+    acciones:[]
 
-    }],
 }, {collection: 'entidades'});
 
 EntidadSchema.method('toJSON', function(){

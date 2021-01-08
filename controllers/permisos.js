@@ -7,6 +7,8 @@ const Entidad = require('../models/entidad');
 const Modulo = require('../models/modulo');
 const Permiso = require('../models/permiso');
 const Parametro = require('../models/parametro');
+const Usuario = require('../models/usuario');
+const Accion = require('../models/accion');
 
 const getPermisos = async(req, res = response) =>{
     try {
@@ -43,32 +45,33 @@ const getPermisos = async(req, res = response) =>{
 };
 
 const getAcciones = async(req, res = response) =>{
-    try {
-
-        const modulos = await Modulo.find();
-
+    try {        
         const id = req.params.id;
         
         const validarId = await validyty(id);
         if(!validarId){
-        
+            
             // TODO: guardar log
             return res.status(400).json({
                 ok: false,
                 msg: 'Error id no valido'
             });
-        
+            
         }
+        
+        const modulos = await Modulo.find();
 
         let menu = [];        
 
         await Promise.all(modulos.map(async (modulo)=>{
 
-            const entidades = await Entidad.find({'moduloId': modulo._id});
+            const entidades = await Entidad.find({'modulo': modulo._id});
 
             await Promise.all(entidades.map(async (entidad)=>{
-                
-                await Promise.all(entidad.acciones.map(async (accion)=>{
+
+                const acciones = await Accion.find({'entidad': entidad._id});                
+
+                await Promise.all(acciones.map(async (accion)=>{
 
                     const permiso = await Permiso.find({'accion': accion._id, 'asignado': id});
                     
@@ -76,12 +79,13 @@ const getAcciones = async(req, res = response) =>{
                         accion.check = true;
                     }
 
-                }))
-            }))
+                }));
+
+                entidad.acciones = acciones;
+
+            }));            
             
             menu.push({ modulo, entidades: entidades});
-
-
 
         }));
 
@@ -119,7 +123,7 @@ const postPermisos = async(req, res = response) =>{
         }
 
         const body = req.body;
-
+        
         await Permiso.deleteMany({'asignado': id });
 
         await Promise.all(body.map( async (permiso)=>{    
@@ -152,7 +156,7 @@ const getVerificarRuta = async(req, res = response) =>{
     try {
         
         const superUser = await Parametro.findOne({ 'nombre' :'SUPE_USUARIO', 'valor': req.uid});
-        
+
         if(superUser){
 
             return res.json({
@@ -160,11 +164,11 @@ const getVerificarRuta = async(req, res = response) =>{
             });
         }
 
-        const ruta = req.body.ruta;
-
-        const entidad = await Entidad.findOne({'url': ruta});
-
-        if(!entidad){
+        const ruta = await req.body.ruta; 
+        
+        const accion = await Accion.findOne({'url': ruta}); 
+        
+        if(!accion){
             // TODO: guardar log
             return res.status(404).json({
                 ok: false,
@@ -172,7 +176,7 @@ const getVerificarRuta = async(req, res = response) =>{
             });
         }
 
-        const permiso = await Permiso.findOne({'asignado': req.uid, 'entidad': entidad._id});
+        const permiso = await Permiso.findOne({'asignado': req.role, 'accion': accion._id});
 
         if(!permiso){
             // TODO: guardar log
@@ -187,8 +191,7 @@ const getVerificarRuta = async(req, res = response) =>{
             ok: true           
         });
 
-    } catch (error) {
-        console.log(error);
+    } catch (error) {        
         // TODO: guardar log
         res.status(500).json({
             ok: false,

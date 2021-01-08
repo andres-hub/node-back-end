@@ -40,7 +40,7 @@ const login = async(req, res = response)=>{
             });
         }
 
-        const token = await generarJWT(usuarioDB.id);
+        const token = await generarJWT(usuarioDB.id, usuarioDB.role);
         const menu = await getMenuFrontEnd(usuarioDB.id);
 
         // TODO: guardar log
@@ -93,7 +93,7 @@ const googleSingIn = async( req, res = response) => {
 
         await usuario.save();
         
-        const token = await generarJWT(usuario.id);
+        const token = await generarJWT(usuario.id, usuario.role);
 
         const menu = await getMenuFrontEnd(usuario.id);
 
@@ -119,8 +119,9 @@ const renewToken = async(req, res = response)=>{
     try {
 
         const uid = req.uid;
+        const role = req.role;
 
-        const token = await generarJWT(uid)
+        const token = await generarJWT(uid, role);
 
         const usuario = await Usuario.findById(uid);
 

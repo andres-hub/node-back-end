@@ -22,7 +22,7 @@ const  getMenuFrontEnd = async(uid) =>{
 
                 const submenu = [];
                 
-                const entidades = await Entidad.find({'moduloId': _id});
+                const entidades = await Entidad.find({'modulo': _id});
     
                 await Promise.all(entidades.map(async (entidad)=>{
     
@@ -41,24 +41,22 @@ const  getMenuFrontEnd = async(uid) =>{
                     submenu
                  });
 
-            }));
-
-            
+            }));    
             
         }else{   
             
-            const modulos = await Permiso.find({'asignado': role}).distinct('modulo');
+            const modulos = await Permiso.find({'asignado': role}).distinct('modulo'); 
 
             await Promise.all(modulos.map(async (modulo)=>{
 
-                const {nombre, icono} = await Modulo.findById(modulo);
+                const {nombre, icono} = await Modulo.findById(modulo); 
                 
                 const submenu = [];
                 
-                const entidades = await Permiso.find({'asignado': uid, 'modulo':modulo}).distinct('entidad');
+                const entidades = await Permiso.find({'asignado': role, 'modulo':modulo}).distinct('entidad');
     
                 await Promise.all(entidades.map(async (entidad)=>{
-    
+
                     const {nombre, url} = await Entidad.findById(entidad);
     
                     submenu.push({
