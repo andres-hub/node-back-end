@@ -1,4 +1,4 @@
-const {response} = require('express');
+const {response, json} = require('express');
 const bcryptjs = require('bcryptjs');
 
 
@@ -6,6 +6,7 @@ const { generarJWT } = require('../helpers/jwt');
 const { getMenuFrontEnd } = require('../helpers/menu-frontend');
 const Usuario = require('../models/usuario');
 const Permiso = require('../models/permiso');
+const { guardarLog } = require('../helpers/guardar-Log');
 
 const getUsuarios = async(req, res)=>{
 
@@ -32,16 +33,18 @@ const getUsuarios = async(req, res)=>{
         });    
 
     } catch (error) {
-        // TODO: guardar log
+        const msg = 'Error inesperado... Comuníquese con el administrador del sistema';
+        const status = 500;
+        guardarLog(req, error,msg,status);
         res.status(500).json({
             ok: false,
-            msg: 'Error inesperado... Comuníquese con el administrador del sistema'
+            msg
         });
     }
 }
 
 const crearUsuario = async(req, res = response)=>{
-    
+
     try {
 
         const {email, password} = req.body;
@@ -49,10 +52,12 @@ const crearUsuario = async(req, res = response)=>{
         const exitsteEmail = await Usuario.findOne({email});
 
         if(exitsteEmail){
-            // TODO: guardar log
+            const msg = 'El correo ya se encuentre registrado';
+            const status = 400;
+            guardarLog(req, email, msg, status);
             return res.status(400).json({
                 ok:false,
-                msg: 'El correo ya se encuentre registrado' 
+                msg 
             });
         }
 
@@ -64,10 +69,9 @@ const crearUsuario = async(req, res = response)=>{
         await usuario.save();
 
         const token = await generarJWT(usuario.id);
-        
         const menu = await getMenuFrontEnd(usuario.id);
 
-        // TODO: guardar log
+        guardarLog(req, email, "ok");
         res.json({
             ok: true,
             token,
@@ -75,14 +79,17 @@ const crearUsuario = async(req, res = response)=>{
         });
         
     } catch (error) {
-        console.log(error);
-        // TODO: guardar log
-        res.status(500).json({
+        const msg = 'Error inesperado... Comuníquese con el administrador del sistema';
+        const status = 500;
+
+        guardarLog(req,error,msg, status);
+        res.status(status).json({
             ok: false,
-            msg: 'Error inesperado... Comuníquese con el administrador del sistema'
+            msg
         });
+
     }
-    
+
 }
 
 const actualizarUsuario = async(req, res = response)=>{    
@@ -93,10 +100,12 @@ const actualizarUsuario = async(req, res = response)=>{
         const usuarioDB = await Usuario.findById(uid);
 
         if(!usuarioDB){
-            // TODO: guardar log
-            return res.status(404).json({
+            const msg = 'El usuario no existe';
+            const status = 404;
+            guardarLog(req, uid, msg, status)
+            return res.status(status).json({
                 ok: false,
-                msg: 'El usuario no existe' 
+                msg
             });
         }
 
@@ -105,10 +114,12 @@ const actualizarUsuario = async(req, res = response)=>{
         if( usuarioDB.email !== email){
             const existeEmail = await Usuario.findOne({email: email});
             if(existeEmail){
-                // TODO: guardar log
+                const msg = 'El email ya existe';
+                const status = 400;
+                guardarLog(req, email, msg, status);
                 return res.status(400).json({
                     ok: false,
-                    msg: 'El email ya existe'
+                    msg
                 });
             }
         }
@@ -116,27 +127,31 @@ const actualizarUsuario = async(req, res = response)=>{
         if(!usuarioDB.google)
             campos.email = email;
         else if(usuarioDB.email !== email){
-            // TODO: guardar log
+            const msg = 'Los usuarios de google no pueden cambiar su correo';
+            const status = 400;
+            guardarLog(req,email, msg, status);
             return res.status(400).json({
                 ok: false,
-                msg: 'Los usuarios de google no pueden cambiar su correo'
+                msg
             });
         }
 
 
         const usuarioActualizado = await Usuario.findByIdAndUpdate(uid, campos, {new: true});
 
-        // TODO: guardar log
+        guardarLog(req,JSON.stringify(campos), msg);
         res.json({
             ok: true,
             usuario: usuarioActualizado
         });
         
     } catch (error) {
-        // TODO: guardar log
-        res.status(500).json({
+        const msg = 'Error inesperado... Comuníquese con el administrador del sistema';
+        const status = 500;
+        guardarLog(req,error, msg, status);
+        res.status(status).json({
             ok: false,
-            msg: 'Error inesperado... Comuníquese con el administrador del sistema'
+            msg
         });
     }
 }
@@ -150,28 +165,31 @@ const borrarUsuario = async(req, res = response)=>{
         const usuarioDB = await Usuario.findById(uid);
 
         if(!usuarioDB){
-            // TODO: guardar log
+            const msg = 'El usuario no existe';
+            const status = 500;
+            guardarLog(req, uid, msg, status);
             return res.status(404).json({
                 ok: false,
-                msg: 'El usuario no existe' 
+                msg
             });
         }
 
         const estado = (usuarioDB.estado)? false : true;
-         
         const usuarioActualizado = await Usuario.findByIdAndUpdate(uid, {estado}, {new: true});
 
-        // TODO: guardar log
+        guardarLog(req, estado, JSON.stringify(usuarioActualizado));
         res.json({
             ok: true,
             usuario: usuarioActualizado
         });
         
     } catch (error) {
-        // TODO: guardar log
-        res.status(500).json({
+        const msg = 'Error inesperado... Comuníquese con el administrador del sistema';
+        const status = 500;
+        guardarLog(req,error, msg, status);
+        res.status(status).json({
             ok: false,
-            msg: 'Error inesperado... Comuníquese con el administrador del sistema'
+            msg
         });
     }
 }
@@ -191,10 +209,12 @@ const buscarUsuario = async(req, res = response) =>{
         });
 
     } catch (error) {
-        // TODO: guardar log
-        res.status(500).json({
+        const msg = 'Error inesperado... Comuníquese con el administrador del sistema';
+        const status = 500;
+        guardarLog(req,error, msg, status);
+        res.status(status).json({
             ok: false,
-            msg: 'Error inesperado... Comuníquese con el administrador del sistema'
+            msg
         });
     }
 }
@@ -208,10 +228,12 @@ const actualizarRol = async(req, res = response)=>{
         const usuarioDB = await Usuario.findById(uid);
         
         if(!usuarioDB){
-            // TODO: guardar log
-            return res.status(404).json({
+            const msg = 'El usuario no existe';
+            const status = 404;
+            guardarLog(req,uid, msg, status);
+            return res.status(status).json({
                 ok: false,
-                msg: 'El usuario no existe' 
+                msg
             });
         }
         
@@ -238,11 +260,12 @@ const actualizarRol = async(req, res = response)=>{
         });
         
     } catch (error) {
-        console.log(error);
-        // TODO: guardar log
-        res.status(500).json({
+        const msg = 'Error inesperado... Comuníquese con el administrador del sistema';
+        const status = 500;
+        guardarLog(req,error, msg, status);
+        res.status(status).json({
             ok: false,
-            msg: 'Error inesperado... Comuníquese con el administrador del sistema'
+            msg
         });
     }
 }

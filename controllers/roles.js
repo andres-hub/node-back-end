@@ -1,9 +1,9 @@
 const {response} = require('express');
 
 const {validyty} = require('../helpers/validity-objectid');
+const { guardarLog } = require('../helpers/guardar-Log');
 
 const Rol = require('../models/rol');
-const router = require('../routes/roles');
 
 const getRoles = async(req, res = response) =>{
     try {
@@ -22,7 +22,6 @@ const getRoles = async(req, res = response) =>{
         
         ]);
 
-        // TODO: guardar log
         res.json({
             ok: true,
             roles,
@@ -30,10 +29,12 @@ const getRoles = async(req, res = response) =>{
         });
 
     } catch (error) {
-        // TODO: guardar log
-        res.status(500).json({
+        const msg = 'Error inesperado... Comuníquese con el administrador del sistema';
+        const status = 500;
+        guardarLog(req, error, msg, status);
+        res.status(status).json({
             ok: false,
-            msg: 'Error inesperado... Comuníquese con el administrador del sistema'
+            msg
         });
     }
 
@@ -44,17 +45,18 @@ const getRolesAll = async(req, res = response) =>{
 
         const roles = await Rol.find();
 
-        // TODO: guardar log
         res.json({
             ok: true,
             roles
         });
 
     } catch (error) {
-        // TODO: guardar log
-        res.status(500).json({
+        const msg = 'Error inesperado... Comuníquese con el administrador del sistema';
+        const status = 500;
+        guardarLog(req, error, msg, status);
+        res.status(status).json({
             ok: false,
-            msg: 'Error inesperado... Comuníquese con el administrador del sistema'
+            msg
         });
     }
 
@@ -67,38 +69,43 @@ const getRolId = async(req, res = response) =>{
         
         const validarId = await validyty(id);
         if(!validarId){
-        
-            // TODO: guardar log
-            return res.status(400).json({
+
+            const msg = 'Error id no valido';
+            const status = 400;
+            guardarLog(req, id, msg, status);
+            return res.status(status).json({
                 ok: false,
-                msg: 'Error id no valido'
+                msg
             });
-        
+
         }
 
         const rol = await Rol.findById(id);
 
         if(!rol){
 
-            // TODO: guardar log
-            return res.status(400).json({
+            const msg = 'Error id no valido';
+            const status = 400;
+            guardarLog(req, id, msg, status);
+            return res.status(status).json({
                 ok: false,
-                msg: 'Error id no valido'
+                msg
             });
 
         }
 
-        // TODO: guardar log
         res.json({
             ok: true,
             rol
         });
 
     } catch (error) {
-        // TODO: guardar log
-        res.status(500).json({
+        const msg = 'Error inesperado... Comuníquese con el administrador del sistema';
+        const status = 500;
+        guardarLog(req, error, msg, status);
+        res.status(status).json({
             ok: false,
-            msg: 'Error inesperado... Comuníquese con el administrador del sistema'
+            msg
         });
     }
 
@@ -112,10 +119,12 @@ const actualizarRol = async(req, res = response) =>{
         const validarId = await validyty(id);
         if(!validarId){
         
-            // TODO: guardar log
+            const msg = 'Error id no valido';
+            const status = 400;
+            guardarLog(req, id, msg, status);
             return res.status(400).json({
                 ok: false,
-                msg: 'Error id no valido'
+                msg
             });
         
         }
@@ -123,30 +132,34 @@ const actualizarRol = async(req, res = response) =>{
         const rolDB = await Rol.findById(id);
 
         if(!rolDB){
-        
-            // TODO: guardar log
+
+            const msg = 'El rol no exite';
+            const status = 400;
+            guardarLog(req, '', msg, status);
             return res.status(400).json({
                 ok: false,
-                msg: 'El rol no exite'
+                msg
             });
-        
+
         }
 
         const cambios = {...req.body}
 
         const rol = await Rol.findByIdAndUpdate(id,cambios,{new:true});
 
-        // TODO: guardar log
+        guardarLog(req, JSON.stringify(cambios),'ok');
         res.json({
             ok: true,
             rol
         });
 
     } catch (error) {
-        // TODO: guardar log
-        res.status(500).json({
+        const msg = 'Error inesperado... Comuníquese con el administrador del sistema';
+        const status = 500;
+        guardarLog(req, error, msg, status);
+        res.status(status).json({
             ok: false,
-            msg: 'Error inesperado... Comuníquese con el administrador del sistema'
+            msg
         });
     }
 
@@ -159,17 +172,19 @@ const crearRol = async(req, res = response) =>{
 
         await rol.save();
 
-        // TODO: guardar log
+        guardarLog(req, JSON.stringify(rol), 'ok');
         res.json({
             ok: true,
             rol
         });
 
     } catch (error) {
-        // TODO: guardar log
-        res.status(500).json({
+        const msg = 'Error inesperado... Comuníquese con el administrador del sistema';
+        const status = 500;
+        guardarLog(req, error, msg, status);
+        res.status(status).json({
             ok: false,
-            msg: 'Error inesperado... Comuníquese con el administrador del sistema'
+            msg
         });
     }
 

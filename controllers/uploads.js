@@ -6,6 +6,7 @@ const { v4: uuidv4 } = require('uuid');
 
 const {actualizarImagen} = require("./actualizar-imagen");
 const { validyty } = require("../helpers/validity-ObjectID");
+const { guardarLog } = require("../helpers/guardar-Log");
 
 const ArquetipoImg = require('../models/arquetipoImg');
 
@@ -17,10 +18,12 @@ const fileUpload = async(req, res = response) => {
         const id = req.query.id || req.uid;
         const validarId = await validyty(id);
         if(!validarId){
-            // TODO: guardar log
-            res.status(400).json({
+            const msg = 'Error id no valido';
+            const status = 400;
+            guardarLog(req, id, msg, status);
+            res.status(status).json({
                 ok: false,
-                msg: 'Error id no valido'
+                msg
             });
         }
 
@@ -30,18 +33,22 @@ const fileUpload = async(req, res = response) => {
         const arquetipoValidos = await ArquetipoImg.findOne({'nombre': arquetipo});
 
         if(!arquetipoValidos){
-            // TODO: guardar log
-            res.status(400).json({
+            const msg = 'Error arquetipo no valida';
+            const status = 400;
+            guardarLog(req, arquetipo, msg, status);
+            return res.status(status).json({
                 ok: false,
-                msg: 'Error arquetipo no valida'
+                msg
             });
         }
-                
+
         if (!req.files || Object.keys(req.files).length === 0) {
-            // TODO: guardar log
-            return res.status(400).json({
+            const msg = 'Archivo guardado con éxito';
+            const status = 400;
+            guardarLog(req, '', msg, status);
+            return res.status(status).json({
                 ok: false,
-                msg: 'Archivo guardado con éxito',
+                msg
             });
         }
 
@@ -53,10 +60,12 @@ const fileUpload = async(req, res = response) => {
         const extencionesValidas = ['png', 'jpg', 'jpeg', 'gif'];
 
         if(!extencionesValidas.includes(extensionArchivo)){
-            // TODO: guardar log
-            res.status(400).json({
+            const msg = 'Error extensión de archivo no valida  no valida';
+            const status = 400;
+            guardarLog(req, extensionArchivo, msg, status);
+            res.status(status).json({
                 ok: false,
-                msg: 'Error extensión de archivo no valida  no valida'
+                msg
             });
         }
 
@@ -75,17 +84,20 @@ const fileUpload = async(req, res = response) => {
         file.mv(path, (err) => {
             
             if(err){
-                // TODO: guardar log
-                res.status(500).json({
+                const msg = 'Error inesperado... Comuníquese con el administrador del sistema';
+                const status = 500;
+                guardarLog(req, err, msg, status);
+                return res.status(status).json({
                     ok: false,
-                    msg: 'Error inesperado... Comuníquese con el administrador del sistema'
+                    msg
                 });
             }
 
-            // TODO: guardar log
+            const msg = "Archivo guardado con éxito";
+            guardarLog(req, nombreArchivo, msg);
             res.json({
                 ok: true,
-                msg: "Archivo guardado con éxito",
+                msg,
                 nombreArchivo
 
             });
@@ -93,10 +105,12 @@ const fileUpload = async(req, res = response) => {
 
 
     } catch (error) {
-        // TODO: guardar log
-        res.status(500).json({
+        const msg = 'Error inesperado... Comuníquese con el administrador del sistema';
+        const status = 500;
+        guardarLog(req, err, msg, status);
+        res.status(status).json({
             ok: false,
-            msg: 'Error inesperado... Comuníquese con el administrador del sistema'
+            msg
         });
     }
 
@@ -117,10 +131,12 @@ const retornarArchivo = (req, res = response) => {
             res.sendFile(pathArchivo);
 
     } catch (error) {
-        // TODO: guardar log
-        res.status(500).json({
+        const msg = 'Error inesperado... Comuníquese con el administrador del sistema';
+        const status = 500;
+        guardarLog(req, error, msg, status);
+        res.status(status).json({
             ok: false,
-            msg: 'Error inesperado... Comuníquese con el administrador del sistema'
+            msg
         });
     }
 

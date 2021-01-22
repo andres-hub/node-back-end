@@ -5,15 +5,16 @@ const Usuario = require('../models/usuario');
 const { generarJWT } = require('../helpers/jwt');
 const { googleVerify } = require('../helpers/google-verify');
 const { getMenuFrontEnd } = require('../helpers/menu-frontend');
+const { guardarLog } = require('../helpers/guardar-Log');
 
 const login = async(req, res = response)=>{
-    
-    const {email, password} = req.body;
 
     try {
 
+        const {email, password} = req.body;
+
         const usuarioDB = await Usuario.findOne({email});
-        
+
         if(!usuarioDB){
             // TODO: guardar log
             return res.status(400).json({
@@ -41,9 +42,11 @@ const login = async(req, res = response)=>{
         }
 
         const token = await generarJWT(usuarioDB.id, usuarioDB.role);
-        const menu = await getMenuFrontEnd(usuarioDB.id);
+        const menu = await getMenuFrontEnd(req,usuarioDB.id);
 
-        // TODO: guardar log
+        req.uid = usuarioDB.id;
+
+        guardarLog(req,email,`ok`);
         res.json({
             ok: true,
             token,
@@ -95,7 +98,7 @@ const googleSingIn = async( req, res = response) => {
         
         const token = await generarJWT(usuario.id, usuario.role);
 
-        const menu = await getMenuFrontEnd(usuario.id);
+        const menu = await getMenuFrontEnd(req,usuario.id);
 
         // TODO: guardar log
         res.json({
@@ -125,7 +128,7 @@ const renewToken = async(req, res = response)=>{
 
         const usuario = await Usuario.findById(uid);
 
-        const menu = await getMenuFrontEnd(usuario.id);
+        const menu = await getMenuFrontEnd(req,usuario.id);
         
         res.json({
             ok: true,

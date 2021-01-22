@@ -3,8 +3,9 @@ const Modulo = require("../models/modulo");
 const Permiso = require("../models/permiso");
 const Usuario = require("../models/usuario");
 const Parametros = require("../models/parametro");
+const { guardarLog } = require('../helpers/guardar-Log');
 
-const  getMenuFrontEnd = async(uid) =>{
+const  getMenuFrontEnd = async(req, uid) =>{
     try {
         
         const menu = [];
@@ -79,11 +80,12 @@ const  getMenuFrontEnd = async(uid) =>{
         return menu;
 
     } catch (error) {
-        console.log(error);
-        // TODO: guardar log
-        res.status(500).json({
+        const msg = 'Error inesperado... Comuníquese con el administrador del sistema';
+        const status = 500;
+        guardarLog(req, error, msg, status);
+        res.status(status).json({
             ok: false,
-            msg: 'Error inesperado... Comuníquese con el administrador del sistema'
+            msg
         });
     }
 

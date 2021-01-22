@@ -1,15 +1,18 @@
 const {response} = require('express');
 const jwt = require('jsonwebtoken');
+const { guardarLog } = require('../helpers/guardar-Log');
 
 const validarJWT = (req, res = response, next)=>{
 
     const token = req.header('x-token');
 
     if(!token){
-        // TODO: Guardar log
-        return res.status(401).json({
+        const msg = 'Token invalido';
+        const status = 401;
+        guardarLog(req,token, msg, status);
+        return res.status(status).json({
             ok: false,
-            msg: 'Token invalido'
+            msg
         });
     }
 
@@ -23,10 +26,12 @@ const validarJWT = (req, res = response, next)=>{
         next();
 
     } catch (error) {
-         // TODO: Guardar log
-        return res.status(401).json({
+        const msg = 'Token invalido';
+        const status = 401;
+        guardarLog(req, token, msg, status)
+        return res.status(status).json({
             ok: false,
-            msg: 'Token invalido'
+            msg
         });
     }
     
