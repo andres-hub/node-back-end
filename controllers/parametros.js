@@ -1,8 +1,10 @@
 const {response} = require('express');
 
 const { validyty } = require('../helpers/validity-objectid');
+const { guardarLog } = require('../helpers/guardar-Log');
 
 const Parametro = require('../models/parametro');
+const parametro = require('../models/parametro');
 
 const getParametros = async(req, res = response) =>{
     try {
@@ -21,7 +23,6 @@ const getParametros = async(req, res = response) =>{
 
         ]);
 
-        // TODO: guardar log
         res.json({
             ok: true,
             parametros,
@@ -29,10 +30,12 @@ const getParametros = async(req, res = response) =>{
         });
 
     } catch (error) {
-        // TODO: guardar log
-        res.status(500).json({
+        const msg = 'Error inesperado... Comuníquese con el administrador del sistema';
+        const status = 500;
+        guardarLog(req,error, msg, status);
+        res.status(status).json({
             ok: false,
-            msg: 'Error inesperado... Comuníquese con el administrador del sistema'
+            msg
         });
     }
 
@@ -53,10 +56,12 @@ const buscarParametro = async(req, res = response) =>{
         });
 
     } catch (error) {
-        // TODO: guardar log
-        res.status(500).json({
+        const msg = 'Error inesperado... Comuníquese con el administrador del sistema';
+        const status = 500;
+        guardarLog(req,error, msg, status);
+        res.status(status).json({
             ok: false,
-            msg: 'Error inesperado... Comuníquese con el administrador del sistema'
+            msg
         });
     }
 
@@ -70,27 +75,30 @@ const getParametroId = async(req, res = response) =>{
         const validarId = await validyty(id);
         if(!validarId){
         
-            // TODO: guardar log
-            return res.status(400).json({
+            const msg = 'Error id no valido';
+            const status = 400;
+            guardarLog(req,error, msg, status);
+            return res.status(status).json({
                 ok: false,
-                msg: 'Error id no valido'
+                msg
             });
         
         }
 
         const parametro = await Parametro.findById(id);
-
-        // TODO: guardar log
+        
         res.json({
             ok: true,
             parametro
         });
 
     } catch (error) {
-        // TODO: guardar log
-        res.status(500).json({
+        const msg = 'Error inesperado... Comuníquese con el administrador del sistema';
+        const status = 500;
+        guardarLog(req,error, msg, status);
+        res.status(status).json({
             ok: false,
-            msg: 'Error inesperado... Comuníquese con el administrador del sistema'
+            msg
         });
     }
 
@@ -104,10 +112,12 @@ const actualizarParametro = async(req, res = response) =>{
         const validarId = await validyty(id);
         if(!validarId){
         
-            // TODO: guardar log
-            return res.status(400).json({
+            const msg = 'Error id no valido';
+            const status = 400;
+            guardarLog(req,error, msg, status);
+            return res.status(status).json({
                 ok: false,
-                msg: 'Error id no valido'
+                msg
             });
         
         }
@@ -126,17 +136,19 @@ const actualizarParametro = async(req, res = response) =>{
 
         parametro = await Parametro.findByIdAndUpdate(id, cambios, {new:true});
 
-        // TODO: guardar log
+        guardarLog(req,JSON.stringify(cambios),JSON.stringify(parametro));
         res.json({
             ok: true,
             parametro
         });
 
     } catch (error) {
-        // TODO: guardar log
-        res.status(500).json({
+        const msg = 'Error inesperado... Comuníquese con el administrador del sistema';
+        const status = 500;
+        guardarLog(req,error, msg, status);
+        res.status(status).json({
             ok: false,
-            msg: 'Error inesperado... Comuníquese con el administrador del sistema'
+            msg
         });
     }
 
@@ -157,17 +169,20 @@ const crearParametro = async(req, res = response) =>{
 
         await parametro.save();
 
-        // TODO: guardar log
+        guardarLog(req,JSON.stringify(body), JSON.stringify(parametro));
+
         res.json({
             ok: true,
             parametro
         });
 
     } catch (error) {  
-        // TODO: guardar log
-        res.status(500).json({
+        const msg = 'Error inesperado... Comuníquese con el administrador del sistema';
+        const status = 500;
+        guardarLog(req,error, msg, status);
+        res.status(status).json({
             ok: false,
-            msg: 'Error inesperado... Comuníquese con el administrador del sistema'
+            msg
         });
     }
 

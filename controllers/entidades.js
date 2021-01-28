@@ -1,5 +1,7 @@
-const {response, urlencoded} = require('express');
+const {response} = require('express');
+
 const { validyty } = require('../helpers/validity-ObjectID');
+const { guardarLog } = require('../helpers/guardar-Log');
 
 const Modulo = require('../models/modulo');
 const Entidad = require('../models/entidad');
@@ -16,10 +18,12 @@ const getEntidades = async(req, res = response) =>{
         
         const validarId = await validyty(id);
         if(!validarId){
-            // TODO: guardar log
+            const msg = 'Error id no valido';
+            const status = 400;
+            guardarLog(req,error, msg, status);
             return res.status(400).json({
                 ok: false,
-                msg: 'Error id no valido'
+                msg
             });
         }
             
@@ -50,11 +54,12 @@ const getEntidades = async(req, res = response) =>{
         
         
     } catch (error) {
-        console.log(error);
-        // TODO: guardar log
-        res.status(500).json({
+        const msg = 'Error inesperado... Comuníquese con el administrador del sistema';
+        const status = 500;
+        guardarLog(req,error, msg, status);
+        res.status(status).json({
             ok: false,
-            msg: 'Error inesperado... Comuníquese con el administrador del sistema'
+            msg
         });
     }
 
@@ -69,10 +74,12 @@ const getBuscar = async(req, res = response) =>{
         const validarId = await validyty(id);
         if(!validarId){
         
-            // TODO: guardar log
-            return res.status(400).json({
+            const msg = 'Error id no valido';
+            const status = 400;
+            guardarLog(req,error, msg, status);
+            return res.status(status).json({
                 ok: false,
-                msg: 'Error id no valido'
+                msg
             });
         
         }
@@ -81,8 +88,7 @@ const getBuscar = async(req, res = response) =>{
         const regex    = new RegExp( termino, 'i' );
 
         const entidades = await Entidad.find({moduloId: id, nombre: regex});
-               
-        // TODO: guardar log
+
         res.json({
             ok: true,
             entidades,
@@ -93,10 +99,12 @@ const getBuscar = async(req, res = response) =>{
 
 
     } catch (error) {
-        // TODO: guardar log
-        res.status(500).json({
+        const msg = 'Error inesperado... Comuníquese con el administrador del sistema';
+        const status = 500;
+        guardarLog(req,error, msg, status);
+        res.status(status).json({
             ok: false,
-            msg: 'Error inesperado... Comuníquese con el administrador del sistema'
+            msg
         });
     }
 
@@ -110,10 +118,12 @@ const getEntidadId = async(req, res = response) =>{
         const validarId = await validyty(id);
         if(!validarId){
         
-            // TODO: guardar log
-            return res.status(400).json({
+            const msg = 'Error id no valido';
+            const status = 400;
+            guardarLog(req,error, msg, status);
+            return res.status(status).json({
                 ok: false,
-                msg: 'Error id no valido'
+                msg
             });
         
         }
@@ -123,10 +133,12 @@ const getEntidadId = async(req, res = response) =>{
 
         if(!entidadDB){
         
-            // TODO: guardar log
-            return res.status(400).json({
+            const msg = 'Error id no valido';
+            const status = 400;
+            guardarLog(req,error, msg, status);
+            return res.status(status).json({
                 ok: false,
-                msg: 'Error id no valido'
+                msg 
             });
         
         }
@@ -135,7 +147,6 @@ const getEntidadId = async(req, res = response) =>{
 
         const acciones = await Accion.find({'entidad': _id});
 
-        // TODO: guardar log
         res.json({
             ok: true,
             entidad:{
@@ -148,11 +159,12 @@ const getEntidadId = async(req, res = response) =>{
         });
 
     } catch (error) {
-        console.log(error);
-        // TODO: guardar log
-        res.status(500).json({
+        const msg = 'Error inesperado... Comuníquese con el administrador del sistema';
+        const status = 500;
+        guardarLog(req,error, msg, status);
+        res.status(status).json({
             ok: false,
-            msg: 'Error inesperado... Comuníquese con el administrador del sistema'
+            msg
         });
     }
 
@@ -177,10 +189,12 @@ const crearEntidad = async(req, res = response) =>{
         }));
         
         if(!validarCampos){
-            // TODO: guardar log
-            return res.status(404).json({
+            const msg = 'Datos incompletos';
+            const status = 404;
+            guardarLog(req,error, msg, status);
+            return res.status(status).json({
                 ok: false,
-                msg: 'Datos incompletos'
+                msg
             });
         }
 
@@ -189,10 +203,12 @@ const crearEntidad = async(req, res = response) =>{
         const modulo = await Modulo.findById(body.modulo);
         
         if(!modulo){
-            // TODO: guardar log
-            return res.status(404).json({
+            const msg = 'El modulo no es valido';
+            const status = 404;
+            guardarLog(req,error, msg, status);
+            return res.status(status).json({
                 ok: false,
-                msg: 'El modulo no es valido' 
+                msg
             });
         }
 
@@ -206,18 +222,19 @@ const crearEntidad = async(req, res = response) =>{
         
         }));
         
-        // TODO: guardar log
+        guardarLog(req,JSON.stringify(body), JSON.stringify(entidad));
         res.json({
             ok: true,
             entidad: body
         });
 
     } catch (error) {
-        console.log(error);
-        // TODO: guardar log
-        res.status(500).json({
+        const msg = 'Error inesperado... Comuníquese con el administrador del sistema';
+        const status = 500;
+        guardarLog(req,error, msg, status);        
+        res.status(status).json({
             ok: false,
-            msg: 'Error inesperado... Comuníquese con el administrador del sistema'
+            msg
         });
     }
 
@@ -231,11 +248,12 @@ const actualizarEntidad = async(req, res = response) =>{
         
         const validarId = await validyty(id);
         if(!validarId){
-        
-            // TODO: guardar log
-            return res.status(400).json({
+            const msg = 'Error id no valido';
+            const status = 400;
+            guardarLog(req,error, msg, status);    
+            return res.status(status).json({
                 ok: false,
-                msg: 'Error id no valido'
+                msg
             });
         
         }
@@ -264,10 +282,12 @@ const actualizarEntidad = async(req, res = response) =>{
         }));
         
         if(!validarCampos){
-            // TODO: guardar log
-            return res.status(404).json({
+            const msg = 'Datos incompletos';
+            const status = 404;
+            guardarLog(req,error, msg, status);
+            return res.status(status).json({
                 ok: false,
-                msg: 'Datos incompletos'
+                msg
             });
         }
 
@@ -292,11 +312,12 @@ const actualizarEntidad = async(req, res = response) =>{
         
 
     } catch (error) {
-        console.log(error);
-        // TODO: guardar log
-        res.status(500).json({
+        const msg = 'Error inesperado... Comuníquese con el administrador del sistema';
+        const status = 500;
+        guardarLog(req,error, msg, status);
+        res.status(status).json({
             ok: false,
-            msg: 'Error inesperado... Comuníquese con el administrador del sistema'
+            msg
         });
     }
 

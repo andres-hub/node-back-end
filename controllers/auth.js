@@ -1,11 +1,12 @@
 const {response} = require('express');
 const bcryptjs = require('bcryptjs');
 
-const Usuario = require('../models/usuario');
 const { generarJWT } = require('../helpers/jwt');
 const { googleVerify } = require('../helpers/google-verify');
 const { getMenuFrontEnd } = require('../helpers/menu-frontend');
 const { guardarLog } = require('../helpers/guardar-Log');
+
+const Usuario = require('../models/usuario');
 
 const login = async(req, res = response)=>{
 
@@ -16,28 +17,34 @@ const login = async(req, res = response)=>{
         const usuarioDB = await Usuario.findOne({email});
 
         if(!usuarioDB){
-            // TODO: guardar log
+            const msg = 'Usuario o contraseña no valida';
+            const status = 400;
+            guardarLog(req,error, msg, status);    
             return res.status(400).json({
                 ok: false,
-                msg: 'Usuario o contraseña no valida' 
+                msg
             });
         }
 
         if(!usuarioDB.estado){
-            // TODO: guardar log
-            return res.status(400).json({
+            const msg = 'Error: Usuario inactivo.';
+            const status = 400;
+            guardarLog(req,error, msg, status);
+            return res.status(status).json({
                 ok: false,
-                msg: 'Error: Usuario inactivo.'
+                msg
             });
         }
 
         const validPassword = bcryptjs.compareSync(password, usuarioDB.password);
 
         if(!validPassword){
-            // TODO: guardar log
-            return res.status(400).json({
+            const msg = 'Usuario o contraseña no valida';
+            const status = 400;
+            guardarLog(req,error, msg, status);
+            return res.status(status).json({
                 ok: false,
-                msg: 'Usuario o contraseña no valida' 
+                msg
             });
         }
 
@@ -54,10 +61,12 @@ const login = async(req, res = response)=>{
         });
         
     } catch (error) {
-         // TODO: guardar log
-         res.status(500).json({
+         const msg = 'Error inesperado... Comuníquese con el administrador del sistema';
+         const status = 500;
+         guardarLog(req,error, msg, status);
+         res.status(status).json({
             ok: false,
-            msg: 'Error inesperado... Comuníquese con el administrador del sistema'
+            msg
         });
     }
 }
@@ -83,10 +92,12 @@ const googleSingIn = async( req, res = response) => {
         }else{
 
             if(!usuarioDB.estado){
-                // TODO: guardar log
-                return res.status(400).json({
+                const msg = 'Error: Usuario inactivo.';
+                const status = 400;
+                guardarLog(req,error, msg, status);
+                return res.status(status).json({
                     ok: false,
-                    msg: 'Error: Usuario inactivo.'
+                    msg
                 });
             }
 
@@ -100,7 +111,7 @@ const googleSingIn = async( req, res = response) => {
 
         const menu = await getMenuFrontEnd(req,usuario.id);
 
-        // TODO: guardar log
+        guardarLog(req,JSON.stringify(usuario),token );
         res.json({
             ok: true,
             token,
@@ -108,10 +119,12 @@ const googleSingIn = async( req, res = response) => {
         });
         
     } catch (error) {
-        // TODO: guardar log
+        const msg = 'El token no es correcto.';
+        const status = 401;
+        guardarLog(req,error, msg, status);
         res.status(401).json({
             ok: false,
-            msg: 'El token no es correcto.'
+            msg
         });
     }
 
@@ -138,10 +151,12 @@ const renewToken = async(req, res = response)=>{
         });
         
     } catch (error) {
-        // TODO: guardar log
-        res.status(500).json({
+        const msg = 'Error inesperado... Comuníquese con el administrador del sistema';
+        const status = 500;
+        guardarLog(req,error, msg, status);
+        res.status(status).json({
             ok: false,
-            msg: 'Error inesperado... Comuníquese con el administrador del sistema'
+            msg
         });
     }
 

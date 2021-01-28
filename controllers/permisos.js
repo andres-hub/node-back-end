@@ -1,13 +1,12 @@
-const {response} = require('express');
-const { set } = require('mongoose');
+const {response, json} = require('express');
 
 const {validyty} = require('../helpers/validity-objectid');
+const { guardarLog } = require('../helpers/guardar-Log');
 
 const Entidad = require('../models/entidad');
 const Modulo = require('../models/modulo');
 const Permiso = require('../models/permiso');
 const Parametro = require('../models/parametro');
-const Usuario = require('../models/usuario');
 const Accion = require('../models/accion');
 
 const getPermisos = async(req, res = response) =>{
@@ -18,43 +17,49 @@ const getPermisos = async(req, res = response) =>{
         const validarId = await validyty(id);
         if(!validarId){
         
-            // TODO: guardar log
-            return res.status(400).json({
+            const msg = 'Error id no valido';
+            const status = 400;
+            guardarLog(req,error, msg, status);
+            return res.status(status).json({
                 ok: false,
-                msg: 'Error id no valido'
+                msg
             });
         
         }
 
         const permisos = await Permiso.find({'asignado': id});
-
-        // TODO: guardar log
+        
         res.json({
             ok: true,
             permisos
         });
 
     } catch (error) {
-        // TODO: guardar log
-        res.status(500).json({
+        const msg = 'Error inesperado... Comuníquese con el administrador del sistema';
+        const status = 500;
+        guardarLog(req,error, msg, status);
+        res.status(status).json({
             ok: false,
-            msg: 'Error inesperado... Comuníquese con el administrador del sistema'
+            msg
         });
     }
 
 };
 
 const getAcciones = async(req, res = response) =>{
-    try {        
+    try {    
+
         const id = req.params.id;
         
         const validarId = await validyty(id);
         if(!validarId){
             
-            // TODO: guardar log
-            return res.status(400).json({
+            const msg = 'Error id no valido';
+            const status = 400;
+            guardarLog(req,error, msg, status);
+            return res.status(status).json({
                 ok: false,
-                msg: 'Error id no valido'
+                msg
             });
             
         }
@@ -89,18 +94,18 @@ const getAcciones = async(req, res = response) =>{
 
         }));
 
-        // TODO: guardar log
         res.json({
             ok: true,
             menu
         });
 
     } catch (error) {
-        console.log(error);
-        // TODO: guardar log
-        res.status(500).json({
+        const msg = 'Error inesperado... Comuníquese con el administrador del sistema';
+        const status = 500;
+        guardarLog(req,error, msg, status);
+        res.status(status).json({
             ok: false,
-            msg: 'Error inesperado... Comuníquese con el administrador del sistema'
+            msg
         });
     }
 
@@ -114,8 +119,10 @@ const postPermisos = async(req, res = response) =>{
         const validarId = await validyty(id);
         if(!validarId){
         
-            // TODO: guardar log
-            return res.status(400).json({
+            const msg = 'Error id no valido';
+            const status = 400;
+            guardarLog(req,error, msg, status);
+            return res.status(status).json({
                 ok: false,
                 msg: 'Error id no valido'
             });
@@ -137,16 +144,20 @@ const postPermisos = async(req, res = response) =>{
 
         }));
 
+       
+        guardarLog(req,JSON.stringify({modulo,entidad, accion, asignado: id}), JSON.stringify(body));
         res.json({
             ok: true,
             body
         });
         
     } catch (error) {
-        // TODO: guardar log
-        res.status(500).json({
+        const msg = 'Error inesperado... Comuníquese con el administrador del sistema';
+        const status = 500;
+        guardarLog(req,error, msg, status);
+        res.status(status).json({
             ok: false,
-            msg: 'Error inesperado... Comuníquese con el administrador del sistema'
+            msg
         });
     }
 
@@ -169,33 +180,38 @@ const getVerificarRuta = async(req, res = response) =>{
         const accion = await Accion.findOne({'url': ruta}); 
         
         if(!accion){
-            // TODO: guardar log
-            return res.status(404).json({
+            const msg = 'Error inesperado... Comuníquese con el administrador del sistema';
+            const status = 404;
+            guardarLog(req,error, msg, status);
+            return res.status(status).json({
                 ok: false,
-                msg: 'Ruta no valida' 
+                msg
             });
         }
 
         const permiso = await Permiso.findOne({'asignado': req.role, 'accion': accion._id});
 
         if(!permiso){
-            // TODO: guardar log
-            return res.status(400).json({
+            const msg = 'Acceso denegado';
+            const status = 400;
+            guardarLog(req,error, msg, status);
+            return res.status(status).json({
                 ok: false,
-                msg: 'Acceso denegado' 
+                msg 
             });
         }
 
-        // TODO: guardar log
         res.json({
             ok: true           
         });
 
     } catch (error) {        
-        // TODO: guardar log
-        res.status(500).json({
+        const msg = 'Error inesperado... Comuníquese con el administrador del sistema';
+        const status = 500;
+        guardarLog(req,error, msg, status);
+        res.status(status).json({
             ok: false,
-            msg: 'Error inesperado... Comuníquese con el administrador del sistema'
+            msg
         });
     }
 

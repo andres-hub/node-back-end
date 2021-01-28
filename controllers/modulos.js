@@ -4,23 +4,25 @@ const Modulo = require('../models/modulo');
 
 
 const { validyty } = require("../helpers/validity-ObjectID");
-
+const { guardarLog } = require('../helpers/guardar-Log');
+ 
 const getAllModulos = async(req, res = response) =>{
     try {
 
         const modulos = await Modulo.find();
-
-        // TODO: guardar log
+        
         res.json({
             ok: true,
             modulos
         });
 
     } catch (error) {
-        // TODO: guardar log
-        res.status(500).json({
+        const msg = 'Error inesperado... Comuníquese con el administrador del sistema';
+        const status = 500;
+        guardarLog(req,error, msg, status);
+        res.status(status).json({
             ok: false,
-            msg: 'Error inesperado... Comuníquese con el administrador del sistema'
+            msg
         });
     }
 
@@ -51,10 +53,12 @@ const getModulos = async(req, res = response) =>{
         });
         
     } catch (error) {
-        // TODO: guardar log
-        res.status(500).json({
+        const msg = 'Error inesperado... Comuníquese con el administrador del sistema';
+        const status = 500;
+        guardarLog(req,error, msg, status);
+        res.status(status).json({
             ok: false,
-            msg: 'Error inesperado... Comuníquese con el administrador del sistema'
+            msg
         });
     }
 
@@ -76,10 +80,12 @@ const buscarModulo = async(req, res = response) =>{
         });
 
     } catch (error) {
-        // TODO: guardar log
-        res.status(500).json({
+        const msg = 'Error inesperado... Comuníquese con el administrador del sistema';
+        const status = 500;
+        guardarLog(req,error, msg, status);
+        res.status(status).json({
             ok: false,
-            msg: 'Error inesperado... Comuníquese con el administrador del sistema'
+            msg
         });
     }
 }
@@ -90,21 +96,24 @@ const getModuloId = async(req, res = response)=>{
         const id = req.params.id;
         const validarId = await validyty(id);
         if(!validarId){
-            // TODO: guardar log
-            return res.status(400).json({
+            const msg = 'Error id no valido';
+            const status = 400;
+            guardarLog(req,error, msg, status);
+            return res.status(status).json({
                 ok: false,
-                msg: 'Error id no valido'
+                msg 
             });
         }
         
         const modulo = await Modulo.findById(id);
 
         if(!modulo){
-        
-            // TODO: guardar log
-            return res.status(400).json({
+            const msg = 'Error id no valido';
+            const status = 400;
+            guardarLog(req,id, msg, status);
+            return res.status(status).json({
                 ok: false,
-                msg: 'Error id no valido'
+                msg
             });
         
         }
@@ -115,10 +124,12 @@ const getModuloId = async(req, res = response)=>{
         });
         
     } catch (error) {
-        // TODO: guardar log
-        res.status(500).json({
+        const msg = 'Error inesperado... Comuníquese con el administrador del sistema';
+        const status = 500;
+        guardarLog(req,error, msg, status);
+        res.status(status).json({
             ok: false,
-            msg: 'Error inesperado... Comuníquese con el administrador del sistema'
+            msg
         });
     }
 }
@@ -131,17 +142,19 @@ const crearModulo = async(req, res = response) =>{
         
         await modulo.save();
         
-        // TODO: guardar log
+        guardarLog(req,JSON.stringify(req.body), JSON.stringify(modulo) );
         res.json({
             ok: true,
             modulo
         });
 
     } catch (error) {
-        // TODO: guardar log
-        res.status(500).json({
+        const msg = 'Error inesperado... Comuníquese con el administrador del sistema';
+        const status = 500;
+        guardarLog(req,error, msg, status);
+        res.status(status).json({
             ok: false,
-            msg: 'Error inesperado... Comuníquese con el administrador del sistema'
+            msg
         });
     }
 
@@ -173,10 +186,12 @@ const actualizarModulo = async(req, res = response) =>{
     
         
     } catch (error) {
-        // TODO: guardar log
-        res.status(500).json({
+        const msg = 'Error inesperado... Comuníquese con el administrador del sistema';
+        const status = 500;
+        guardarLog(req,error, msg, status);
+        res.status(status).json({
             ok: false,
-            msg: 'Error inesperado... Comuníquese con el administrador del sistema'
+            msg
         });
     }
 
