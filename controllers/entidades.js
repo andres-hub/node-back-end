@@ -1,6 +1,6 @@
 const {response} = require('express');
 
-const { validyty } = require('../helpers/validity-ObjectID');
+const { validyty } = require('../helpers/validity-objectid');
 const { guardarLog } = require('../helpers/guardar-Log');
 
 const Modulo = require('../models/modulo');
