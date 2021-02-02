@@ -3,7 +3,7 @@ const {response} = require('express');
 const Modulo = require('../models/modulo');
 
 
-const { validyty } = require("../helpers/validity-ObjectID");
+const { validyty } = require("../helpers/validity-objectid");
 const { guardarLog } = require('../helpers/guardar-Log');
  
 const getAllModulos = async(req, res = response) =>{
