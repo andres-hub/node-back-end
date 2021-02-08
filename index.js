@@ -26,6 +26,9 @@ app.use('/api/permisos', require('./routes/permisos'));
 app.use('/api/upload', require('./routes/uploads'));
 app.use('/api/login', require('./routes/auth'));
 
+// Negocio
+app.use('/api/ingresos', require('./routes/ingresos'));
+
 // Lo ultimo 
 app.get('*', (req, res) => {
     res.sendFile( path.resolve(__dirname, 'public/index.html') );

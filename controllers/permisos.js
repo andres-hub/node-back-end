@@ -167,7 +167,7 @@ const getVerificarRuta = async(req, res = response) =>{
     try {
         
         const superUser = await Parametro.findOne({ 'nombre' :'SUPE_USUARIO', 'valor': req.uid});
-
+        
         if(superUser){
 
             return res.json({
@@ -175,8 +175,8 @@ const getVerificarRuta = async(req, res = response) =>{
             });
         }
 
-        const ruta = await req.body.ruta; 
-        
+        const ruta = await req.body.ruta;
+
         const accion = await Accion.findOne({'url': ruta}); 
         
         if(!accion){
