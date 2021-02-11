@@ -1,13 +1,27 @@
 const {Schema, model} = require('mongoose');
 
-const IngresoSchema = Schema({
+const GastoSchema = Schema({
 
     nombre:{
         type: String,
         required: true
     },
+    tipo:{
+        type: String,
+        required: true
+    },
+    numeroCuotas:{
+        type: String        
+    },
+    efectivoAnual:{
+        type: String        
+    },
     frecuencia: {
         type: String,
+        required: true
+    },   
+    fechaPago: {
+        type: Date,
         required: true
     },
     valor: {
@@ -26,9 +40,9 @@ const IngresoSchema = Schema({
     }
 });
 
-IngresoSchema.method('toJSON', function(){
+GastoSchema.method('toJSON', function(){
     const { __v, ...object } = this.toObject();
     return object;   
 });
 
-module.exports = model('Ingreso', IngresoSchema);
+module.exports = model('Gasto', GastoSchema);

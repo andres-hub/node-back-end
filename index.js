@@ -28,6 +28,7 @@ app.use('/api/login', require('./routes/auth'));
 
 // Negocio
 app.use('/api/ingresos', require('./routes/ingresos'));
+app.use('/api/gastos', require('./routes/gastos'));
 
 // Lo ultimo 
 app.get('*', (req, res) => {
