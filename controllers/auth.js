@@ -15,11 +15,11 @@ const login = async(req, res = response)=>{
         const {email, password} = req.body;
 
         const usuarioDB = await Usuario.findOne({email});
-
+       
         if(!usuarioDB){
             const msg = 'Usuario o contraseña no valida';
             const status = 400;
-            guardarLog(req,error, msg, status);    
+            guardarLog(req,JSON.stringify(req.body), msg, status);    
             return res.status(400).json({
                 ok: false,
                 msg
@@ -29,7 +29,7 @@ const login = async(req, res = response)=>{
         if(!usuarioDB.estado){
             const msg = 'Error: Usuario inactivo.';
             const status = 400;
-            guardarLog(req,error, msg, status);
+            guardarLog(req,JSON.stringify(req.body), msg, status);
             return res.status(status).json({
                 ok: false,
                 msg
@@ -41,7 +41,7 @@ const login = async(req, res = response)=>{
         if(!validPassword){
             const msg = 'Usuario o contraseña no valida';
             const status = 400;
-            guardarLog(req,error, msg, status);
+            guardarLog(req,JSON.stringify(req.body), msg, status);
             return res.status(status).json({
                 ok: false,
                 msg
