@@ -3,11 +3,14 @@ const Log = require('../models/log');
 const guardarLog = (req, Data, respuesta, status = 200) => {
 
     try {
-
+        let ip = " ";
+        if(!req.connection.remoteAddress){
+            ip = req.connection.remoteAddress;
+        }
         const log = new Log({
             baseUrl: req.baseUrl,
             method: req.method,
-            ip: req.connection.remoteAddress,
+            ip: ip,
             Data,
             respuesta,
             status,
@@ -17,7 +20,7 @@ const guardarLog = (req, Data, respuesta, status = 200) => {
         log.save();
 
     } catch (error) {
-        console.log(error);
+       
     }
 
 }

@@ -5,9 +5,9 @@ const Gasto = require('../models/gasto');
 
 const getGastos = async(req, res = response) =>{
     try {
-
-        const gastos = await Gasto.find({ 'uid': req.uid, estado: true });
         
+        const gastos = await Gasto.find({ 'uid': req.uid, estado: true });
+        console.log(gastos);
         res.json({
             ok: true,
             gastos
@@ -91,6 +91,7 @@ const crearGasto = async(req, res = response) =>{
         });
 
     } catch (error) {
+        console.log(error);
         const msg = 'Error inesperado... Comuníquese con el administrador del sistema';
         const status = 500;
         guardarLog(req,error, msg, status);

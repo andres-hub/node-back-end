@@ -10,10 +10,9 @@ const crearIngreso = async(req, res = response) =>{
         campos.uid = req.uid;
 
         const ingreso = new Ingreso(campos);
-
         await ingreso.save();
 
-        guardarLog(req,JSON.stringify(campos), JSON.stringify(ingreso));
+        guardarLog(req,JSON.stringify(campos), JSON.stringify("Creado"));
         res.json({
             ok: true,
             ingreso

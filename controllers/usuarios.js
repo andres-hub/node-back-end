@@ -65,13 +65,12 @@ const crearUsuario = async(req, res = response)=>{
 
         const salt = bcryptjs.genSaltSync();
         usuario.password = bcryptjs.hashSync(password, salt);
-        
-        await usuario.save();
 
+        await usuario.save();
+        console.log(req.connection.remoteAddress);
         const token = await generarJWT(usuario.id);
         const menu = await getMenuFrontEnd(usuario.id);
-
-        guardarLog(req, email, "ok");
+        await guardarLog(req, email, "ok");
         res.json({
             ok: true,
             token,
@@ -81,7 +80,7 @@ const crearUsuario = async(req, res = response)=>{
     } catch (error) {
         const msg = 'Error inesperado... Comuníquese con el administrador del sistema';
         const status = 500;
-
+        
         guardarLog(req,error,msg, status);
         res.status(status).json({
             ok: false,

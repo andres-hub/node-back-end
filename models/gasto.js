@@ -20,9 +20,8 @@ const GastoSchema = Schema({
         type: String,
         required: true
     },   
-    fechaPago: {
-        type: Date,
-        required: true
+    quincena: {
+        type: String
     },
     valor: {
         type: String,

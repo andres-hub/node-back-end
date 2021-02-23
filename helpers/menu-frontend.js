@@ -6,14 +6,13 @@ const Parametros = require("../models/parametro");
 const { guardarLog } = require('../helpers/guardar-Log');
 
 const  getMenuFrontEnd = async(req, uid) =>{
+    const menu = [];
     try {
-        
-        const menu = [];
 
         const {role} = await Usuario.findById(uid);
 
         const superUser = await   Parametros.findOne({ 'nombre' :'SUPE_USUARIO', 'valor': uid});
-
+        
         if(superUser){
             const modulos = await Modulo.find();
             
@@ -76,17 +75,14 @@ const  getMenuFrontEnd = async(req, uid) =>{
             }));
 
         }
-             
+        
         return menu;
 
     } catch (error) {
         const msg = 'Error inesperado... Comuníquese con el administrador del sistema';
         const status = 500;
         guardarLog(req, error, msg, status);
-        res.status(status).json({
-            ok: false,
-            msg
-        });
+        return menu;
     }
 
 };

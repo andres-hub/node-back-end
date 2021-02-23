@@ -3,38 +3,35 @@
 */
 
 const {Router} = require('express');
+
 const {check} = require('express-validator');
 const {validarCampos} = require('../middlewares/validar-campos');
-
 const {validarJWT} = require('../middlewares/validar-jwt');
-const { getMovimientos, crearMovimiento, eliminarMovimiento } = require('../controllers/movimientos');
+const { getMovimientos, pagarMovimiento, eliminarPago } = require('../controllers/movimientos');
 
 const router = Router();
 
-router.get('/',
+router.get('/:tipo/:quincena',
     [
         validarJWT
     ],
     getMovimientos
 );
 
-router.post('/',
+router.put('/:id',
     [   
         validarJWT,
-        check('nombre', 'El nombre es obligatorio').not().isEmpty(),       
-        check('tipo', 'El tipo es obligatorio').not().isEmpty(),
-        check('arquetipoId', 'El arquetipoId no es valido').isMongoId(),
-        check('valor', 'El valor no es valido').isInt(),
+        check('valor', 'El valor es obligatorio').not().isEmpty(),
         validarCampos
     ],
-    crearMovimiento
+    pagarMovimiento
 );
 
 router.delete('/:id',
     [
         validarJWT
     ],
-    eliminarMovimiento
+    eliminarPago
 )
 
 module.exports = router;

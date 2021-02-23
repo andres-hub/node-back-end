@@ -121,7 +121,7 @@ const postPermisos = async(req, res = response) =>{
         
             const msg = 'Error id no valido';
             const status = 400;
-            guardarLog(req,error, msg, status);
+            guardarLog(req,id, msg, status);
             return res.status(status).json({
                 ok: false,
                 msg: 'Error id no valido'
@@ -145,13 +145,13 @@ const postPermisos = async(req, res = response) =>{
         }));
 
        
-        guardarLog(req,JSON.stringify({modulo,entidad, accion, asignado: id}), JSON.stringify(body));
+        guardarLog(req,JSON.stringify(body), "ok");
         res.json({
             ok: true,
             body
         });
         
-    } catch (error) {
+    } catch (error) {      
         const msg = 'Error inesperado... Comuníquese con el administrador del sistema';
         const status = 500;
         guardarLog(req,error, msg, status);
@@ -165,11 +165,9 @@ const postPermisos = async(req, res = response) =>{
 
 const getVerificarRuta = async(req, res = response) =>{
     try {
-        
-        const superUser = await Parametro.findOne({ 'nombre' :'SUPE_USUARIO', 'valor': req.uid});
-        
-        if(superUser){
 
+        const superUser = await Parametro.findOne({ 'nombre' :'SUPE_USUARIO', 'valor': req.uid});
+        if(superUser){           
             return res.json({
                 ok: true           
             });

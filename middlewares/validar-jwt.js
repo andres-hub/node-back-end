@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const { guardarLog } = require('../helpers/guardar-Log');
 
 const validarJWT = (req, res = response, next)=>{
-
+    
     const token = req.header('x-token');
 
     if(!token){

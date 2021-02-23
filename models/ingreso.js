@@ -19,6 +19,9 @@ const IngresoSchema = Schema({
         ref: 'Usuario',
         required: true
     },
+    quincena:{
+        type: String,
+    },
     estado:{
         type: Boolean,
         required: true,

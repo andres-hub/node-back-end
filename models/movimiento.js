@@ -22,6 +22,18 @@ const MovimientoSchema = Schema({
         type: Number,
         required: true
     },
+    quincena: {
+        type: String,
+        required: true
+    },
+    mes:{
+        type: String,
+        required: true
+    },
+    pago: {
+        type: Boolean,
+        default: false
+    },
     uid:{
         type: Schema.Types.ObjectId,
         ref: 'Usuario',
