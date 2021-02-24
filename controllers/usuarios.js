@@ -67,7 +67,6 @@ const crearUsuario = async(req, res = response)=>{
         usuario.password = bcryptjs.hashSync(password, salt);
 
         await usuario.save();
-        console.log(req.connection.remoteAddress);
         const token = await generarJWT(usuario.id);
         const menu = await getMenuFrontEnd(usuario.id);
         await guardarLog(req, email, "ok");

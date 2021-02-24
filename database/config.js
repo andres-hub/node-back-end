@@ -12,8 +12,7 @@ const dbConnection = async () => {
         
         console.log("DB OnLine");
         
-    } catch (error) {
-        console.log(error);
+    } catch (error) {        
         throw new ('Error al iniciar la base de datos');
     }
 

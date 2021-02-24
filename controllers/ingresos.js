@@ -19,7 +19,6 @@ const crearIngreso = async(req, res = response) =>{
         });
 
     } catch (error) {
-        console.log(error);
         const msg = 'Error inesperado... Comuníquese con el administrador del sistema';
         const status = 500;
         guardarLog(req,error, msg, status);
