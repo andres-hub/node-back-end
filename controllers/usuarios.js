@@ -137,7 +137,7 @@ const actualizarUsuario = async(req, res = response)=>{
 
         const usuarioActualizado = await Usuario.findByIdAndUpdate(uid, campos, {new: true});
 
-        guardarLog(req,JSON.stringify(campos), msg);
+        guardarLog(req,JSON.stringify(campos), JSON.stringify(usuarioActualizado));
         res.json({
             ok: true,
             usuario: usuarioActualizado

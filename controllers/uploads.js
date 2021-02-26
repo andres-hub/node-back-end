@@ -14,7 +14,7 @@ const ArquetipoImg = require('../models/arquetipoImg');
 const fileUpload = async(req, res = response) => {
 
     try {
-
+        
         const id = req.query.id || req.uid;
         const validarId = await validyty(id);
         if(!validarId){
@@ -26,22 +26,21 @@ const fileUpload = async(req, res = response) => {
                 msg
             });
         }
-
+       
         const arquetipo = req.params.arquetipo;
 
         // TODO: crear servicio pra crud de la coleccion
         const arquetipoValidos = await ArquetipoImg.findOne({'nombre': arquetipo});
-
+        
         if(!arquetipoValidos){
-            const msg = 'Error arquetipo no valida';
+            const msg = 'Error arquetipo no valido';
             const status = 400;
             guardarLog(req, arquetipo, msg, status);
             return res.status(status).json({
                 ok: false,
-                msg
+                error:{msg}
             });
-        }
-
+        }        
         if (!req.files || Object.keys(req.files).length === 0) {
             const msg = 'Archivo guardado con éxito';
             const status = 400;
@@ -92,7 +91,7 @@ const fileUpload = async(req, res = response) => {
                     msg
                 });
             }
-
+            
             const msg = "Archivo guardado con éxito";
             guardarLog(req, nombreArchivo, msg);
             res.json({
