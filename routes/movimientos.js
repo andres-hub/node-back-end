@@ -7,9 +7,16 @@ const {Router} = require('express');
 const {check} = require('express-validator');
 const {validarCampos} = require('../middlewares/validar-campos');
 const {validarJWT} = require('../middlewares/validar-jwt');
-const { getMovimientos, pagarMovimiento, eliminarPago } = require('../controllers/movimientos');
+const { getMovimientos, pagarMovimiento, eliminarPago, getQuincenas } = require('../controllers/movimientos');
 
 const router = Router();
+
+router.get('/quincenas',
+    [
+        validarJWT
+    ],
+    getQuincenas
+)
 
 router.get('/:tipo/:quincena',
     [

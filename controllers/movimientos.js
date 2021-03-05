@@ -6,7 +6,51 @@ const { guardarLog } = require('../helpers/guardar-Log');
 const Ingreso = require('../models/ingreso');
 const Movimiento = require('../models/movimiento'); 
 const Gasto = require('../models/gasto');
-const Quincena = require('../models/quincena');
+const { Query } = require('mongoose');
+
+const getQuincenas = async(req, res = response) =>{
+    try {
+
+        const desde = Number(req.query.desde) || 0;
+        const limite = Number(req.query.limite) || 10;
+        var _quincenas = [];
+        const quincenas = await Movimiento.find().skip(desde).limit(limite);
+
+        await Promise.all(quincenas.map(q =>{
+            const {quincena, mes, fecha} = q;
+             if(!_quincenas.find(m=> m.quincena === quincena && m.mes === mes)){
+                let primerDia = new Date(fecha.getFullYear(), fecha.getMonth(), 1);
+                let ultimoDia = new Date(fecha.getFullYear(), fecha.getMonth() + 1, 0);
+
+                if(quincena === 'primera'){
+                    ultimoDia.setDate(primerDia.getDate() + 14);
+                }else{
+                    primerDia.setDate(primerDia.getDate() + 14);
+                }
+                _quincenas.push({mes, quincena, primerDia, ultimoDia});
+             }
+        })); 
+        
+        await _quincenas.sort();
+        await _quincenas.reverse();
+        
+        res.json({
+            ok: true,
+            _quincenas
+        });
+
+    } catch (error) {
+        console.log(error);
+        const msg = 'Error inesperado... Comuníquese con el administrador del sistema';
+        const status = 500;
+        guardarLog(req,error, msg, status);
+        res.status(status).json({
+            ok: false,
+            msg
+        });
+    }
+
+};
 
 const getMovimientos = async(req, res = response) =>{
     try {
@@ -62,6 +106,10 @@ const getMovimientos = async(req, res = response) =>{
                     ingreso.estado = false;
                     ingreso.save();
                 }
+                if(movimiento && !movimiento.pago && movimiento.valor != ingreso.valor){
+                    movimiento.valor = ingreso.valor;
+                    movimiento.save();
+                }
 
             }));
 
@@ -98,6 +146,11 @@ const getMovimientos = async(req, res = response) =>{
                 if(gasto.frecuencia == 'Unica'){
                     gasto.estado = false;
                     gasto.save();
+                }
+
+                if(movimiento && !movimiento.pago && movimiento.valor != gasto.valor){
+                    movimiento.valor = gasto.valor;
+                    movimiento.save();
                 }
 
             }));
@@ -235,5 +288,6 @@ const eliminarPago = async(req, res = response) =>{
 module.exports = {
     getMovimientos,
     pagarMovimiento,
-    eliminarPago
+    eliminarPago,
+    getQuincenas
 }

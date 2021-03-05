@@ -205,7 +205,7 @@ const crearEntidad = async(req, res = response) =>{
         if(!modulo){
             const msg = 'El modulo no es valido';
             const status = 404;
-            guardarLog(req,error, msg, status);
+            guardarLog(req,msg, msg, status);
             return res.status(status).json({
                 ok: false,
                 msg
@@ -228,7 +228,7 @@ const crearEntidad = async(req, res = response) =>{
             entidad: body
         });
 
-    } catch (error) {
+    } catch (error) {        
         const msg = 'Error inesperado... Comuníquese con el administrador del sistema';
         const status = 500;
         guardarLog(req,error, msg, status);        
